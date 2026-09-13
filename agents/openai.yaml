@@ -1,0 +1,6 @@
+interface:
+  display_name: "Modelica System-Level Simulation"
+  short_description: "Engineer, diagnose, visualize, and optimize Modelica systems"
+  default_prompt: "Use $modelica-system-level-simulation to inspect this Modelica project, improve it end to end, validate the result, and leave one cumulative Markdown engineering report."
+policy:
+  allow_implicit_invocation: true
