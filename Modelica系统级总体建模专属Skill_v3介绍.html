@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Modelica System-Level Simulation Skill v3.0 — 专属版说明</title>
+<style>
+:root{
+  --navy:#123A6D; --blue:#1F5F9B; --blue2:#2B78B8; --ice:#EEF5FB; --line:#D7E3EF;
+  --ink:#172433; --muted:#5C6D7E; --green:#1D7A5F; --amber:#A35E00; --red:#A63D40;
+  --card:#FFFFFF; --bg:#F6F9FC;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Microsoft YaHei","PingFang SC","Segoe UI",Arial,sans-serif;line-height:1.7}
+a{color:var(--blue);text-decoration:none} a:hover{text-decoration:underline}
+.hero{background:linear-gradient(135deg,#0E315F,#1D5F9E 62%,#347EB5);color:white;padding:64px 7vw 54px;position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;width:420px;height:420px;border:1px solid rgba(255,255,255,.16);border-radius:50%;right:-120px;top:-180px;box-shadow:0 0 0 55px rgba(255,255,255,.04),0 0 0 110px rgba(255,255,255,.03)}
+.hero h1{font-size:40px;line-height:1.25;margin:0 0 12px;max-width:1000px}
+.hero .sub{font-size:19px;opacity:.94;max-width:1100px}
+.badges{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}.badge{border:1px solid rgba(255,255,255,.35);border-radius:999px;padding:6px 12px;font-size:13px;background:rgba(255,255,255,.08)}
+.wrap{max-width:1180px;margin:0 auto;padding:34px 26px 70px}
+.toc{background:#fff;border:1px solid var(--line);border-radius:14px;padding:20px 24px;margin-top:-28px;position:relative;box-shadow:0 8px 25px rgba(24,65,104,.08)}
+.toc b{color:var(--navy)}.toc a{display:inline-block;margin:5px 18px 5px 0;font-size:14px}
+section{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:28px 30px;margin-top:24px;box-shadow:0 4px 18px rgba(28,70,110,.04)}
+h2{color:var(--navy);font-size:25px;margin:0 0 16px;border-left:5px solid var(--blue2);padding-left:12px}
+h3{color:#244F7B;font-size:19px;margin-top:26px}.lead{font-size:17px;color:#31475D}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.grid.two{grid-template-columns:repeat(2,1fr)}
+.card{border:1px solid var(--line);background:#FBFDFF;border-radius:12px;padding:17px}.card h3{margin:0 0 8px;font-size:17px}.card p{margin:0;color:var(--muted);font-size:14px}
+.kpi{font-size:28px;font-weight:700;color:var(--blue)}.small{font-size:13px;color:var(--muted)}
+.callout{border-left:4px solid var(--blue2);background:var(--ice);padding:14px 17px;border-radius:0 10px 10px 0;margin:16px 0}.callout.warn{border-left-color:var(--amber);background:#FFF8EA}
+.flow{display:flex;gap:10px;align-items:stretch;flex-wrap:wrap;margin:18px 0}.node{flex:1 1 150px;min-width:145px;padding:14px;border:1px solid #BFD3E6;background:#F4F9FD;border-radius:11px;text-align:center;font-weight:700;color:#214E79;position:relative}.arrow{align-self:center;color:#6A89A5;font-size:23px}
+pre,code{font-family:Consolas,"SFMono-Regular",monospace}pre{background:#0F2438;color:#E7F0F8;padding:18px;border-radius:12px;overflow:auto;font-size:13px;line-height:1.55}code{background:#EDF3F8;padding:2px 5px;border-radius:4px;color:#214D77}pre code{background:none;color:inherit;padding:0}
+table{border-collapse:collapse;width:100%;font-size:14px;margin:14px 0}th,td{border:1px solid var(--line);padding:10px 11px;vertical-align:top}th{background:#EAF3FA;color:#234E78;text-align:left}tr:nth-child(even) td{background:#FCFDFE}
+.good{color:var(--green);font-weight:700}.warntext{color:var(--amber);font-weight:700}
+.compare td:first-child{font-weight:700;color:#294F73}.source-list li{margin:9px 0}.footer{text-align:center;color:#6B7E90;margin-top:28px;font-size:13px}
+@media(max-width:850px){.hero h1{font-size:31px}.grid,.grid.two{grid-template-columns:1fr}.wrap{padding:24px 14px 50px}section{padding:22px 19px}.arrow{display:none}}
+</style>
+</head>
+<body>
+<header class="hero">
+  <h1>Modelica System-Level Simulation Skill v3.0</h1>
+  <div class="sub">面向 Codex + OpenModelica 的专属系统级总体建模 Skill：把架构设计、白/黑箱建模、图形语义、参数配置、分阶段诊断、仿真闭环、性能优化、验证与工程交付统一到一个可复用工作流中。</div>
+  <div class="badges">
+    <span class="badge">OpenModelica-first</span><span class="badge">Domain-independent</span><span class="badge">Semantic Icon & Diagram</span><span class="badge">Staged Diagnose</span><span class="badge">One-report Handoff</span><span class="badge">C/FMU Ready</span>
+  </div>
+</header>
+<div class="wrap">
+  <nav class="toc"><b>目录：</b>
+    <a href="#position">定位</a><a href="#upgrade">v3增强</a><a href="#architecture">工作架构</a><a href="#visual">图形增强</a><a href="#diagnose">诊断增强</a><a href="#report">唯一说明文件</a><a href="#files">目录结构</a><a href="#use">安装与使用</a><a href="#sources">开源来源</a><a href="#evaluation">评价</a>
+  </nav>
+
+  <section id="position">
+    <h2>1. 这个 Skill 的定位</h2>
+    <p class="lead">它不是“帮 Codex 写 Modelica 代码的一段提示词”，而是一套<strong>系统级 Modelica 工程工作规程</strong>。核心目标是让 Codex 既会建模，也会判断模型是否值得这样建、是否画得清楚、是否运行正确、为什么运行慢、优化后是否仍保持工程有效性，以及最终如何形成可交接的完整说明。</p>
+    <div class="grid">
+      <div class="card"><div class="kpi">架构</div><h3>先结构、后方程</h3><p>从真实系统边界、功能/过程归属和共享耦合网络推导分层，不固定套用机电热信等领域模板。</p></div>
+      <div class="card"><div class="kpi">图形</div><h3>可视模型即工程接口</h3><p>Icon/Diagram 是模型架构的一部分，而非最后装饰；强调语义图标、端口几何、可读连线和层次导航。</p></div>
+      <div class="card"><div class="kpi">验证</div><h3>仿真完成 ≠ 模型正确</h3><p>每次重要运行后都读取状态/KPI并做数值、物理、功能和性能 sanity check。</p></div>
+      <div class="card"><div class="kpi">诊断</div><h3>按阶段定位问题</h3><p>把失败拆成 check、flatten、build、initialize/simulate、trajectory、profiling、variable trace。</p></div>
+      <div class="card"><div class="kpi">性能</div><h3>性能是架构指标</h3><p>优先消除冗余状态、无价值细节、事件爆炸与偶然代数复杂度，再谈求解器参数。</p></div>
+      <div class="card"><div class="kpi">交付</div><h3>一个累计说明文件</h3><p>模型/结果之外，默认只保留一个 <code>MODEL_ENGINEERING_REPORT.md</code>，集中承载全过程和评价。</p></div>
+    </div>
+  </section>
+
+  <section id="upgrade">
+    <h2>2. 相比 v2 的核心增强</h2>
+    <table class="compare">
+      <tr><th>能力</th><th>v2</th><th>v3 专属版</th></tr>
+      <tr><td>总体建模</td><td>已经具备领域无关、白/黑箱、配置、观测、保真度等完整框架</td><td>保留原有主线，并增加“先查复用/文档、再建新类”的明确决策步骤</td></tr>
+      <tr><td>Icon/Diagram</td><td>项目级 visual grammar、端口规则、基本 Icon/Diagram 指南</td><td><span class="good">语义图标合成</span>、类角色分类、非破坏式修改、连接图驱动布局、反馈环/共享网络路由、静态 Visual QA</td></tr>
+      <tr><td>诊断</td><td>性能指标与质量门较强，但缺少专门诊断链</td><td><span class="good">D0–D7 分阶段诊断</span>：static → check → flatten → build → simulate → trajectory → profiling → trace</td></tr>
+      <tr><td>OpenModelica</td><td>工具无关为主</td><td>明确 OpenModelica-first；支持 OMC scripting，并兼容 OMEdit MCP（可用时）</td></tr>
+      <tr><td>仿真工作流</td><td>验证/回归较完整</td><td>增加“run → read → sanity-check → compare → modify → rerun”闭环，Agent 自己读结果，不把检查工作甩给用户</td></tr>
+      <tr><td>性能优化</td><td>有清晰优化顺序</td><td>加入阶段耗时、OpenModelica profiling、运行超时预算、优化前后 KPI 偏差联动评价</td></tr>
+      <tr><td>最终交付</td><td>保留 release evidence，但未限制文档数量</td><td><span class="good">强制单一累计报告</span>，诊断/图标/优化/验证结论全部归并进一个 .md</td></tr>
+      <tr><td>Codex 元数据</td><td>无</td><td>新增 <code>agents/openai.yaml</code>，便于 Codex 展示与自动调用</td></tr>
+      <tr><td>辅助脚本</td><td>2 个</td><td>4 个：项目静态审计、白箱审计、视觉审计、OpenModelica 分阶段诊断</td></tr>
+    </table>
+  </section>
+
+  <section id="architecture">
+    <h2>3. 专属 Skill 的工作架构</h2>
+    <div class="flow">
+      <div class="node">建模合同<br><span class="small">边界 / KPI / 保真度 / 性能预算</span></div><div class="arrow">→</div>
+      <div class="node">系统架构<br><span class="small">功能归属 × 共享耦合</span></div><div class="arrow">→</div>
+      <div class="node">接口与白黑箱<br><span class="small">稳定边界 / 可替换核心</span></div><div class="arrow">→</div>
+      <div class="node">图形与配置<br><span class="small">Icon/Diagram / Excel生成</span></div>
+    </div>
+    <div class="flow">
+      <div class="node">分阶段诊断<br><span class="small">check → flatten → build</span></div><div class="arrow">→</div>
+      <div class="node">仿真观察<br><span class="small">simulate → read → sanity</span></div><div class="arrow">→</div>
+      <div class="node">性能优化<br><span class="small">profile → simplify → compare</span></div><div class="arrow">→</div>
+      <div class="node">验证与交付<br><span class="small">quality gates + one report</span></div>
+    </div>
+    <div class="callout"><strong>关键原则：</strong>所有系统都保留“功能/过程责任”和“跨边界耦合”两个观察维度，但具体耦合领域由目标系统决定，绝不因为其他项目曾经有机械、电气、热、信息四域，就强行复刻四域结构。</div>
+  </section>
+
+  <section id="visual">
+    <h2>4. 图标绘制与 Diagram 布局的增强</h2>
+    <p>v3 吸收了公开 <code>annotate-modelica-graphics</code> 的有价值思路，但不依赖 Wolfram 的专用脚本，而是形成适合你的项目级图形规范。</p>
+    <div class="grid two">
+      <div class="card"><h3>4.1 先识别模型角色</h3><p>package、connector、物理源/边界、设备、控制器、传感器/observer、adapter、subsystem、experiment、behavior core 分别采用不同视觉策略。</p></div>
+      <div class="card"><h3>4.2 语义图标而非统一方框</h3><p>读取类名、描述、端口和必要的内部语义，提炼 1–3 个工程特征，用 Modelica 原生矢量图元表达；只有 F0 架构占位阶段才允许 generic box。</p></div>
+      <div class="card"><h3>4.3 非破坏式修改</h3><p>默认保留已人工调好的 Placement、Line、Icon、Diagram；除非明确要求，否则不能为了自动重排而清空重画。</p></div>
+      <div class="card"><h3>4.4 连接图驱动布局</h3><p>先识别主路径、分支、反馈强连通组、共享总线/网络和外部边界，再安排组件位置与正交线路，而不是逐个“就近放置”。</p></div>
+    </div>
+    <h3>Visual QA</h3>
+    <p>最终检查语义可识别性、家族一致性、端口边规则、文字可读性、越界图形、线交叉、绕线、反馈路径、通道走廊以及缩小视图下的可读性。新增 <code>scripts/audit_modelica_visuals.py</code> 提供静态启发式检查，但真正的最终门仍是 OMEdit/MCP 或截图中的视觉检查。</p>
+  </section>
+
+  <section id="diagnose">
+    <h2>5. diagnose-modelica 能力如何被整合</h2>
+    <div class="flow">
+      <div class="node">D0<br>静态审计</div><div class="arrow">→</div>
+      <div class="node">D1<br>checkModel</div><div class="arrow">→</div>
+      <div class="node">D2<br>instantiate</div><div class="arrow">→</div>
+      <div class="node">D3<br>buildModel</div><div class="arrow">→</div>
+      <div class="node">D4<br>simulate</div>
+    </div>
+    <div class="flow">
+      <div class="node">D5<br>trajectory/KPI sanity</div><div class="arrow">→</div>
+      <div class="node">D6<br>profiling</div><div class="arrow">→</div>
+      <div class="node">D7<br>variable/source trace</div>
+    </div>
+    <p>这条链解决了一个常见问题：以前 Codex 看到“仿真失败”后很容易直接改 solver、容差或初值；现在必须先确认失败发生在哪个阶段，并把问题分类为路径/依赖、结构不平衡、初始化、非线性收敛、事件爆炸、刚性、重复状态、结果输出、外部接口等，再选择最小侵入的修复方式。</p>
+    <div class="callout warn"><strong>性能优化约束：</strong>求解器调参被放到优化序列后部。优先处理无价值保真度、重复状态、事件密集开关、偶然代数耦合、过量结果输出；每次优化必须在同一 canonical case 上比较速度与 KPI 偏差。</div>
+    <p>新增 <code>scripts/diagnose_openmodelica.py</code>，可通过 OMC 执行 check / flatten / build / simulate / profile 的轻量 staged runner，并支持超时限制，避免明显失控的模型长时间占用仿真。</p>
+  </section>
+
+  <section id="report">
+    <h2>6. 你新增的“唯一完整说明文件”规则</h2>
+    <p class="lead">这是 v3 最重要的工程交付约束之一。每轮 Codex 完成模型优化后，除模型/配置源文件和需要保留的结果文件外，默认只输出或更新一个：</p>
+    <pre><code>MODEL_ENGINEERING_REPORT.md</code></pre>
+    <p>不再分别留下 <code>architecture_report.md</code>、<code>icon_report.md</code>、<code>diagnosis_report.md</code>、<code>optimization_notes.md</code>、<code>test_summary.md</code> 等碎片化文档。OpenModelica profiler HTML、日志、MOS、JSON/XML 等仍可在工作过程中生成，但默认作为中间证据；关键结论写进唯一的 Markdown 报告。</p>
+    <h3>报告不是“这次改了什么”的薄日志，而是最终项目说明书</h3>
+    <table>
+      <tr><th>模块</th><th>必须说明的内容</th></tr>
+      <tr><td>任务与基线</td><td>目标、初始模型、依赖、运行入口、已有问题</td></tr>
+      <tr><td>系统建模</td><td>边界、架构、功能/过程分解、共享耦合、白箱/黑箱、接口、保真度</td></tr>
+      <tr><td>图形</td><td>项目 visual grammar、Icon 语义、Diagram 布局、路由和 Visual QA</td></tr>
+      <tr><td>参数配置</td><td>基线、外部配置、单位转换、override、生成 Modelica 的链路</td></tr>
+      <tr><td>诊断</td><td>症状 → 阶段 → 证据 → 根因 → 修改 → 复测 → 剩余风险</td></tr>
+      <tr><td>仿真结果</td><td>solver、时间范围、关键 KPI、轨迹解释、sanity/physical checks</td></tr>
+      <tr><td>性能</td><td>优化前后翻译/编译/初始化/仿真/总时长，状态/事件/结果大小变化</td></tr>
+      <tr><td>评价</td><td>正确性、架构、可视性、可配置性、可观测性、保真度、性能、可维护/可替换/可复现</td></tr>
+      <tr><td>后续</td><td>限制、未决问题、按价值和风险排序的下一步</td></tr>
+    </table>
+    <p>包内已经增加 <code>templates/engineering-report-template.md</code>，Codex 每次更新同一份报告即可。</p>
+  </section>
+
+  <section id="files">
+    <h2>7. v3 Skill 文件结构</h2>
+    <pre><code>modelica-system-level-simulation/
+├─ SKILL.md
+├─ agents/
+│  └─ openai.yaml
+├─ references/
+│  ├─ modeling-decision-framework.md
+│  ├─ architecture.md
+│  ├─ visual-language.md
+│  ├─ configuration-pipeline.md
+│  ├─ interfaces-and-observability.md
+│  ├─ fidelity-and-performance.md
+│  ├─ diagnostics-and-performance.md
+│  ├─ simulation-observation-loop.md
+│  ├─ openmodelica-toolchain.md
+│  ├─ output-and-reporting.md
+│  ├─ verification-and-quality-gates.md
+│  └─ open-source-inspirations.md
+├─ templates/
+│  ├─ modelica-patterns.md
+│  ├─ project-layout.md
+│  └─ engineering-report-template.md
+└─ scripts/
+   ├─ audit_whiteboxes.py
+   ├─ audit_modelica_project.py
+   ├─ audit_modelica_visuals.py
+   └─ diagnose_openmodelica.py</code></pre>
+    <div class="grid">
+      <div class="card"><div class="kpi">12</div><h3>References</h3><p>把大段领域规则拆成按需加载的知识文件，避免 SKILL.md 承担所有细节。</p></div>
+      <div class="card"><div class="kpi">4</div><h3>Scripts</h3><p>把重复、确定性的审计/诊断步骤做成脚本，减少 Codex 每次临时重写。</p></div>
+      <div class="card"><div class="kpi">3</div><h3>Templates</h3><p>Modelica 模式、项目结构、唯一工程报告模板。</p></div>
+    </div>
+  </section>
+
+  <section id="use">
+    <h2>8. 安装与使用</h2>
+    <h3>用户级安装</h3>
+    <pre><code>%USERPROFILE%\.agents\skills\modelica-system-level-simulation\</code></pre>
+    <h3>项目级安装</h3>
+    <pre><code>&lt;ProjectRoot&gt;\.agents\skills\modelica-system-level-simulation\</code></pre>
+    <p>将本次输出 ZIP 解压，使 <code>SKILL.md</code> 直接位于上述 skill 目录下。</p>
+    <h3>典型调用</h3>
+    <pre><code>$modelica-system-level-simulation
+全面检查当前 Modelica 工程，先建立基线并分阶段诊断，再优化架构、图标、Diagram、参数配置和仿真性能。
+保持现有有效接口；每次修改后完成验证和结果读取。
+最终除模型与仿真结果外，只保留并更新 MODEL_ENGINEERING_REPORT.md。</code></pre>
+    <h3>专项调用示例</h3>
+    <pre><code># 图形专项
+$modelica-system-level-simulation
+只增强整个库的 Icon/Diagram。不得修改模型物理方程；保留人工调好的 annotation，
+对 generic placeholder 做语义化重绘，并做 Visual QA。
+
+# 性能专项
+$modelica-system-level-simulation
+诊断当前总体模型为什么运行慢。按 check→flatten→build→simulate→profile 分阶段定位，
+在保持关键 KPI 的前提下优先做结构/保真度优化，不要先放宽 tolerance。
+
+# 参数化专项
+$modelica-system-level-simulation
+把工程参数整理成外部 Excel/CSV → 校验 → 生成 Modelica record 的配置链，
+仿真时不得实时解析 Excel。</code></pre>
+  </section>
+
+  <section id="sources">
+    <h2>9. 吸收的开源能力及改造方式</h2>
+    <ul class="source-list">
+      <li><strong>WolframResearch/system-modeler-ai-toolkit</strong>：重点参考 <code>modelica-model-architecture</code>、<code>annotate-modelica-graphics</code>、<code>diagnose-modelica</code>、<code>simulate-modelica</code> 的工作流思想。<br><a href="https://github.com/WolframResearch/system-modeler-ai-toolkit">https://github.com/WolframResearch/system-modeler-ai-toolkit</a></li>
+      <li><strong>LunCoSim</strong>：参考 <code>run-modelica</code> 与 <code>inspect-simulation</code> 的“Agent 自己运行并读取结果”的闭环理念，同时去掉 USD/Rust/LunCoSim 专属假设。<br><a href="https://github.com/LunCoSim/lunco-sim">https://github.com/LunCoSim/lunco-sim</a></li>
+      <li><strong>OpenModelica</strong>：使用官方 scripting API 的 <code>checkModel</code>、<code>instantiateModel</code>、<code>buildModel</code>、<code>simulate</code>、<code>getErrorString</code>，并利用性能 profiling；OMEdit 新版 MCP 作为可选执行入口。<br><a href="https://openmodelica.org/">https://openmodelica.org/</a></li>
+      <li><strong>OpenAI Agent Skills 规范</strong>：采用 <code>SKILL.md + agents/openai.yaml + references + scripts + assets/templates</code> 的渐进式 Skill 结构。</li>
+    </ul>
+    <div class="callout"><strong>不是简单拼接：</strong>本 Skill 没有把 Wolfram 的 WSMKernelX 执行层搬进来，也没有复制 LunCoSim 的 USD/Rust 体系；真正保留下来的是架构、图形、诊断和观察闭环的通用思想，并重新落到 OpenModelica 和你的系统级建模方法上。</div>
+  </section>
+
+  <section id="evaluation">
+    <h2>10. 对这套专属 Skill 的评价</h2>
+    <table>
+      <tr><th>维度</th><th>评价</th><th>说明</th></tr>
+      <tr><td>系统级建模适配</td><td class="good">很强</td><td>不是组件代码生成器，而是从系统边界、功能归属、耦合网络到实验入口的全链条规程。</td></tr>
+      <tr><td>OpenModelica 适配</td><td class="good">强</td><td>执行诊断逻辑已经按 OMC scripting 和 profiling 重写，且不强依赖 OMEdit MCP。</td></tr>
+      <tr><td>图形工程能力</td><td class="good">明显增强</td><td>比 v2 多了 semantic glyph、non-destructive workflow、graph-driven layout 和独立视觉审计。</td></tr>
+      <tr><td>诊断/性能能力</td><td class="good">明显增强</td><td>从“性能原则”升级到可执行的 staged diagnosis + profile + KPI regression。</td></tr>
+      <tr><td>工程交付性</td><td class="good">非常强</td><td>单一累计 Markdown 报告避免项目越做越多、说明文件越散，特别适合 Codex 多轮迭代。</td></tr>
+      <tr><td>自动化程度</td><td>中高</td><td>已有静态审计和 OMC staged runner；复杂语义图标仍需要 Agent 结合模型含义判断，这是合理的人机/Agent分工。</td></tr>
+      <tr><td>潜在限制</td><td class="warntext">需持续迭代</td><td>Modelica 完整语法难以靠正则审计；visual audit 是启发式；不同第三方库/OMC版本的诊断输出仍需按项目适配。</td></tr>
+    </table>
+    <p class="lead">总体而言，v3 已经从“Modelica 总体建模规范”升级为<strong>Modelica 系统级工程 Agent 工作流</strong>。它最有价值的不是某一个规则，而是把“建模—可视化—诊断—运行—观察—优化—验证—交付”变成了 Codex 必须遵守的闭环。</p>
+  </section>
+
+  <div class="footer">Modelica System-Level Simulation Skill v3.0 · Custom Codex/OpenModelica workflow · 2026-09</div>
+</div>
+</body>
+</html>
