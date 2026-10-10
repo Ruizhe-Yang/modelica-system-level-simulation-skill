@@ -1,859 +1,117 @@
 ---
-name: modelica-system-level-simulation
-description: Build, refactor, parameterize, visualize, diagnose, simulate, verify, and optimize domain-independent Modelica system-level models, especially with OpenModelica. Use for multi-subsystem architecture, graphical white-box + localized behavior-core design, Icon/Diagram engineering, Excel/CSV/JSON configuration generation, observability/KPIs, staged diagnostics, simulation/performance optimization, C/FMU/software replacement, regression, and engineering handoff. Derive domains, interfaces, layout, and fidelity from the real system; never force a fixed domain template. After each completed optimization cycle, keep user-facing deliverables to model/source artifacts, requested simulation/result artifacts, and one cumulative Markdown engineering report.
-compatibility: Optimized for OpenModelica/OMC and tool-independent Modelica. OMEdit MCP is optional. Python 3 is used by bundled audit/diagnostic helpers.
+name: mosaic
+description: Build and maintain Modelica system-level models using the concrete MOSAIC modeling standard. Use for TB/SB/AB whitebox composition, BU behavior and MSL reuse, interface/state/configuration reviews, Documentation and result comments, Modelica Icon/Diagram and connection-color maintenance, diagnostics, simulation, and scoped auxiliary patches. Preserve the requested change boundary and accepted working source; do not trigger physics refactoring for documentation or graphics work.
+license: GPL-3.0; see LICENSE
+compatibility: Python 3.10+ for bundled static helpers. A separately installed Modelica engine is required for compilation and simulation. MAT metadata inspection additionally needs scipy/numpy. No automatic network or software installation.
 metadata:
-  version: "3.0.0"
+  version: "0.8.0"
+  standard: "MOSAIC v0.8"
 ---
 
-# Modelica System-Level Simulation
+# MOSAIC｜Modelica 总体建模规范
 
-## Purpose
+**Model the Whole as MOSAIC.**
 
-Build Modelica projects that are not only executable, but also **readable, configurable, replaceable, observable, diagnosable, verifiable, visually coherent, and efficient enough for iterative engineering**.
+按实际系统组织模型，把装配、行为、接口、状态、配置和维护内容写清楚。规范是工程分工约定，不是另一个需要导入的 Modelica 库，不承诺仅遵守形式就自动达到实机精度。
 
-Core principle:
+## 1. 先确定任务范围
 
-> **Make topology visible, localize equations and algorithms, derive interfaces from the real system, separate configuration generation from solver execution, inspect the model instead of trusting a successful run, and make every optimization cycle reproducible from one cumulative engineering report.**
+读取当前用户要求、实际源代码、工程说明、配置和已认可基线。当前明确指令优先于旧提示词；不能从规范升级推导出源码全面重构的授权。默认中文说明，合法类名和已有入口保持。
 
-This skill is deliberately domain-independent. Do not assume fixed physical domains, connector sides, subsystem counts, package names, or a universal top-level layout.
+| 工作模式 | 允许内容 | 保护边界 |
+|---|---|---|
+| NEW / REFINE | 已授权的模型、接口、配置、行为及闭环验证 | 原有有效用途；不擅自降低验收条件 |
+| CONFIGURE | 权威配置、离线生成、单位和消费者核对 | 不静默新增第二套默认值 |
+| AUDIT | 默认只读；记录角色、依赖、源事实与未知项 | 不因为发现差异直接改模型 |
+| DOCUMENTATION_ONLY | Documentation、声明字符串说明、明确发布元数据 | 所有行为、实际连接、图形与求解注解 |
+| CONNECTION_COLOR_ONLY | 实际 connect 的 Line.color | connect 端点、points、线宽、图标图案、所有行为 |
+| VISUAL_ONLY | 用户明确授权的 Icon/Diagram/Placement/Line | 字段类型、参数、初始化、状态、实际 connect |
+| RESULTS / DIAGNOSE | 真实结果、分层排查与必要的有限复现 | 不造数据，不把短诊断拼成完整任务 |
 
-### Preferred toolchain
+多个辅助模式可由用户明确组合。发现范围外行为缺陷时记录位置与影响，不擅自修复。辅助维护不自动进入仿真调参循环。
 
-- Prefer **OpenModelica/OMC** for validation, translation, simulation, diagnostics, and profiling when available.
-- If the **OMEdit MCP server** is connected, use it to inspect/edit graphical models, run models, and read results without asking the user to click through OMEdit.
-- If MCP is not available, use `omc`/MOS scripting and the bundled Python helpers.
-- Keep generated Modelica standard-compliant unless a tool-specific extension is explicitly justified.
-- When an MSL class name, parameter, connector, or language semantic is uncertain, verify it from the installed Modelica/OpenModelica documentation instead of guessing from memory.
+## 2. 规范等级与角色底线
 
-Read `references/openmodelica-toolchain.md` when tool interaction or staged diagnosis is required.
+先读 [完整 M01—M36](references/standard.md)，涉及架构时再读 [角色详细合同](references/model_roles.md)。本版 **26 项 R 必须、9 项 S 建议、1 项 F 参考**。A/B/C/D 附录均为参考；只有项目明确选用的附加要求才加入该任务检查集。
 
----
+**TB、SB、AB 全部是白箱，不存在默认宽松、可选严格两套定义。** 有效本层只声明、配置和连接；检查继承与 modifier，不只搜索当前文件的 equation。物理/控制行为必须有明确承担者。
 
-## 1. Start with a modeling contract
+| 角色 | 应有内容 | 不应有内容 |
+|---|---|---|
+| TB 顶层盒 | 完整实验、生效配置、对象/边界/必要上下文、connect、实验设置 | 本层控制律、积分、任务算法、初始补方程；被当作功能子实例 |
+| SB 系统盒 | 实际集成边界、公开接口、静态配置分配、SB/AB/BU/LU 和可导航 Diagram | 本层胶水计算、隐藏状态、跨层穿透 |
+| AB 装配盒 | 末级 BU/LU 装配、共同边界和 connect；两个及以上有实际作用的叶子 | 本层行为、AB/SB 嵌套却仍称末级装配、无意义实例凑数 |
+| BU 行为单元 | 内聚方程/算法、参数、端口、变量、必要状态与初始化 | 独立运行 model/block 子实例，包括 MSL 运行组件 |
+| LU 库复用单元 | 原始 MSL，或只改静态参数/呈现的别名；原库内部结构保留 | 新增本构/状态/输出计算后仍称纯库别名 |
 
-Before detailed modeling or optimization, establish:
+固定维数、仅含 connect、可确定展开的静态 for/if 连接模板和经检查的白箱继承可用。它们不是允许在白箱加入计算的例外。常量运行输入也采用显式源连接，`component(u=1)` 不是参数配置。已认可工程可以继续保留；角色重新识别不等于本次授权改动行为。
 
-- engineering purpose and decisions the model must support;
-- system boundary and external environment;
-- authoritative outputs/KPIs/events;
-- simulation horizon and relevant time scales;
-- required fidelity and acceptable simplifications;
-- expected C/FMU/software/data integrations;
-- configuration ownership;
-- runtime/translation performance budget;
-- verification evidence required for release;
-- final deliverable scope and the name/location of the single cumulative Markdown report.
+TB/SB/AB/BU/LU 是概念，不是命名前缀。允许 MSL 传感器；图标、逐类说明、语言和目录习惯按建议，不复活旧禁令。默认以自有源码与 MSL 4.0.0 为原生依赖；既有冻结版本不擅自升级。外部集成仅按明确批准的项目 profile。
 
-If these are unclear, resolve architecture before adding model detail.
+## 3. 按任务读取，不把所有长文一次塞入上下文
 
-Read `references/modeling-decision-framework.md` when deciding boundary, decomposition, fidelity, or completion criteria.
+| 任务 | 参考文件 |
+|---|---|
+| 架构、五角色、白箱语法、支撑类内容 | [model_roles.md](references/model_roles.md)、[architecture.md](references/architecture.md) |
+| 接口、状态、参数与输出最小合同 | [interfaces_contracts.md](references/interfaces_contracts.md)、[MSL 接口目录](references/msl_interfaces.md) |
+| 配置与曲线生成、消费、单位 | [configuration.md](references/configuration.md) |
+| 文档清理、名称去重、结果字段说明 | [documentation.md](references/documentation.md) |
+| 模型图标、父层布局、MSL 派生/自定义线色 | [visuals.md](references/visuals.md) |
+| MOSAIC 自己的品牌与文档样式 | [brand.md](references/brand.md) |
+| 诊断、编译、结果与性能 | [verification.md](references/verification.md)、[evolution.md](references/evolution.md) |
+| Codex 执行、范围、停止与交付 | [codex.md](references/codex.md) |
+| 旧条号/旧 skill 迁移 | [traceability.md](references/traceability.md)、[upgrade.md](references/upgrade.md) |
+| 唯一具体项目案例 | [12ucubesat.md](examples/12ucubesat.md) |
 
----
+## 4. 新建或行为改进
 
-## 2. Reuse before rebuilding
+明确用途、任务时域、构型、边界、关键结果、必需检查与预算。列实际组成、必要物理/信息耦合、每个状态的唯一拥有者，再设计公开接口和数据合同。
 
-Before creating a new component, connector, type, or utility:
+先做最小真实闭环，再局部细化。装配层只连接；传感、单位转换、仲裁、积分和查表各归明确行为/库单元。命令、实际作用、测量、估计和只读诊断分别定义。单位换算、额定基准、曲线和初态同源消费。为满足目标直接令真实状态等于参考值不是建模。
 
-1. inspect the Modelica Standard Library version actually used by the project;
-2. inspect reusable classes already present in the repository;
-3. inspect explicitly approved third-party libraries;
-4. create a new class only when the existing options do not provide the required semantics or boundary.
+实际验证按加载/依赖 → 展开/平衡 → 编译 → 初始化/积分 → 原始结果 → 项目指标/独立守恒 → 必要性能定位推进。单次超时、短诊断和旧结果不冒充当前完整任务。没有引擎就标 NOT_RUN，不制造 MAT 或 PASS。具体硬秒数、状态规模和图数不是通用规范。
 
-Prefer standard physical connectors for conserved networks and standard signal interfaces where they fit.
+## 5. 文档、名称与线色维护
 
-Do not invent a connector merely to make a Diagram convenient. A boundary is justified by semantics and ownership, not by drawing convenience.
+文档写用途、必要接口/配置、组成或行为、真实状态和使用限制。不逐类生成通用的“连接与责任”统计、“仿真后如何查看”教程或“Documentation 辅助更新……”免责声明。删套话不等于删真实限制、许可、初始化或有效域说明。
 
-For any external class used, record the dependency and version in the cumulative engineering report.
+模型树由工具显示 `ClassName (description)` 时，声明只写中文用途：`model Device "设备中文用途"`。不要写成 `"Device（设备中文用途）"`。不改 ClassName、within、实例名或结果路径。结果栏注释用原声明的 string-comment，不新增输出方程、改 unit/HideResult/保存过滤器；旧结果不会自动更新描述。
 
----
+连线先追溯两个端点的真实类型、别名/extends、成员路径。MSL 及其派生用原族默认色；自定义整体连接用已核对主色。自定义总线内 MSL 类型成员仍按该成员的 MSL 颜色，不能跟随整个总线。仅修改真实 connect 的 Line.color，不改图标内装饰线。不能通过一律删除 color 指望工具必然恢复原色。未知类型先报告，不凭名称或相邻线猜测。
 
-## 3. Separate responsibilities into layers
+生成器的文档后处理与调色白名单须和本次新约定同步，防止下次生成恢复旧套话。输入数值/数学摘要与生成字节摘要分别维护，原 RunId 仍是历史证据。
 
-Use this as a **default responsibility model**, not a mandatory folder template:
+## 6. 可执行辅助工具
 
-```text
-<Project>/
-├─ Foundation/       # interfaces, reusable behavior cores, functions, types
-├─ Configuration/    # defaults, cases, generated records, resource metadata
-├─ Components/       # user-facing equipment/unit models and wrappers
-├─ Systems/          # subsystem/process assemblies and justified shared networks
-└─ Experiments/      # runnable cases, validation, variants, benchmarks
+所有命令以本 skill 为当前目录；模型路径由当前任务填写。工具默认不安装软件、不联网、不运行物理模型。
+
+```bash
+# 只读盘点；不是编译器或完整符合性证明。
+python scripts/audit_project.py /path/to/Project --output /path/to/audit.json
+python scripts/audit_roles.py /path/to/Project --roles /path/to/role-map.json --output /path/to/roles.json
+
+# 仅清理指定文稿内容，输出必须是新的独立候选目录。
+python scripts/clean_documentation.py /path/to/source /path/to/new-candidate --report /path/to/doc-cleanup.json
+
+# 先只读线色核对；确认任务允许后才增加 --apply。
+python scripts/connection_colors.py /path/to/Project --report /path/to/line-colors.json
+
+# 精确辅助保护比较：颜色豁免仅在已授权调色时打开。
+python scripts/verify_aux_only.py /path/to/baseline /path/to/candidate \
+  --allow-root-version --allow-connection-colors \
+  --allowlist /path/to/exact-aux-files.json --output /path/to/protected-diff.json
+
+# 已审查类目录生成文稿，或读取现有结果元数据。
+python scripts/enrich_documentation.py /path/to/source /path/to/new-candidate --catalog /path/to/catalog.json
+python scripts/inspect_result_metadata.py /path/to/model_init.xml --csv /path/to/descriptions.csv
+python scripts/check_contract.py /path/to/results-contract.json
+python -m unittest discover -s tests -v
 ```
 
-Recommended dependency direction:
+只有 Documentation 的任务**不加** `--allow-connection-colors`；只增声明说明时连根版本开关也可不加。其他非 `.mo` 变更逐文件列白名单，白名单不等于文件内容已经人工正确。`audit_roles` 只核对提供的角色映射与有限静态结构；不可解析的 MSL 展开、redeclare 和静态模板保留待核，不报完整符合性 PASS。更多接口族需读取真实库源码扩充规则，不猜颜色。
 
-```text
-Foundation → Components → Systems → Experiments
-     ↑            ↑          ↑
-     └────── Configuration / generated artifacts ──────┘
-```
+需要实跑且已获授权时，用 `run_guarded.py --cwd ... --timeout <项目秒数> --log ... --metadata ... -- <实际命令>` 做外部监督。工具可用状态、编译状态和运行状态分别登记。
 
-### Ownership rules
+## 7. 最后交付
 
-- **Foundation** owns equations, algorithms, connectors, types, reusable calculations, adapters, state machines, reduced-order cores.
-- **Configuration** owns static design/case/initial/control/resource choices and generated overrides.
-- **Components** own engineering identity, stable boundaries, and local visible composition.
-- **Systems** own aggregation and integration.
-- **Experiments** own execution context and experiment settings, not plant/system physics.
-
-Rename, merge, or omit packages when appropriate, but preserve ownership clarity and dependency direction.
-
-Read `references/architecture.md` for detailed layering rules.
-
----
-
-## 4. Decompose by the real system, not by a template
-
-Use two independent questions when they improve clarity.
-
-### Functional / process / ownership view
-
-Ask:
-
-> Which subsystem, process section, equipment train, or engineering responsibility owns this behavior?
-
-### Shared coupling view
-
-Ask:
-
-> Which interactions cross several functional boundaries and become clearer as a shared network?
-
-Possible coupling domains may include mechanics, electrical power, thermal transport, fluid/gas path, hydraulics, pneumatics, material flow, information/control, structural load paths, external boundary distribution, or others.
-
-**Never create a domain layer only because another project had one.**
-
-Create a shared coupling network only when it materially helps with one or more of:
-
-- global conservation/reference/closure;
-- repeated distribution infrastructure;
-- cross-subsystem coupling visibility;
-- independent network inspection;
-- alternative network architecture/fidelity;
-- Diagram routing and maintainability.
-
-Otherwise keep the connection local.
-
-### Build an interaction matrix first
-
-Use actual project domains:
-
-| Functional/process unit | Domain A | Domain B | Domain C | External boundary |
-|---|---:|---:|---:|---:|
-| Unit 1 | ✓ |  | ✓ |  |
-| Unit 2 | ✓ | ✓ |  | ✓ |
-| Unit 3 |  | ✓ | ✓ |  |
-
-Use this matrix to derive required ports, shared networks, adapters, and top-level routing.
-
----
-
-## 5. Use white-box / black-box separation by responsibility
-
-### Strict graphical white box
-
-Use for classes whose main purpose is **composition and topology**.
-
-Preferred rules:
-
-- equation section contains only `connect(...)`;
-- important connections have visible `annotation(Line(...))`;
-- behavior is delegated to contained components/cores;
-- no hidden dynamics, control law, `der(...)`, `when`, or algorithm;
-- avoid inheritance that hides significant public topology;
-- provide purposeful Icon, readable Diagram, and Documentation.
-
-Typical candidates are subsystem assemblies, process trains, integration models, shared networks, and component wrappers whose internal topology matters.
-
-### Equation / algorithm black box
-
-Use for classes whose main purpose is **behavior**.
-
-A strong core:
-
-- has narrow, stable interfaces;
-- owns one coherent equation/algorithm responsibility;
-- documents states, assumptions, valid range, and fidelity;
-- exposes verification-relevant outputs;
-- can be tested independently;
-- can be replaced without parent-topology redesign.
-
-### Hybrid adapter
-
-Allow small local glue equations only when they are transparent interface adaptation, unit conversion, aliasing, or mapping and extracting them would reduce readability.
-
-Do not let “hybrid” become an excuse to hide dynamics or control behavior in architecture classes.
-
-### Replaceability test
-
-A stable boundary should support replacement by another native Modelica model, a reduced/detailed fidelity variant, C implementation, FMU, or external software wrapper without changing the parent architecture.
-
-Use `scripts/audit_whiteboxes.py` only on directories/classes explicitly designated as strict graphical white boxes.
-
----
-
-## 6. Design interfaces before internals
-
-For every boundary define:
-
-- semantic meaning;
-- physical quantity and unit where applicable;
-- reference frame/reference state where applicable;
-- acausal vs causal semantics;
-- state ownership;
-- command/measurement/status/event/configuration role;
-- expected update semantics for software/FMU interfaces.
-
-### Physical networks
-
-Prefer acausal Modelica connectors for true conservation networks when the domain supports them.
-
-Do not replace conservation behavior with directional signal approximations merely to simplify wiring unless that reduction is intentional and documented.
-
-### Information/control
-
-Prefer typed records, buses, expandable connectors, enums, or explicit signal interfaces.
-
-Avoid ambiguous raw arrays when field meaning matters. Keep command, measurement, status, and engineering observation semantics distinguishable.
-
-### External boundaries
-
-Keep imposed ambient conditions, load profiles, schedules, measured histories, reference trajectories, and other boundary data distinct from internal command/status semantics when that improves traceability.
-
-Read `references/interfaces-and-observability.md` for interface and software-boundary rules.
-
----
-
-## 7. Treat Icon and Diagram engineering as part of the model
-
-Do not postpone graphics until the end and do not use generic boxes as the finished state for meaningful engineering components.
-
-### 7.1 Classify before drawing
-
-Before adding graphics, classify the class as one of:
-
-- package/category;
-- connector/interface;
-- physical source or boundary;
-- physical component/equipment;
-- controller/logic/state machine;
-- sensor/observer/KPI publisher;
-- adapter/converter;
-- subsystem/assembly/shared network;
-- experiment/example/benchmark;
-- behavior core not intended as a primary graphical object.
-
-The visual treatment follows the role.
-
-### 7.2 Reuse standard visual conventions where appropriate
-
-- For package-like/category classes, prefer suitable `Modelica.Icons.*` bases rather than inventing decorative package symbols.
-- For leaf engineering components, create a semantic custom Icon when a standard icon does not convey the identity.
-- For custom connectors, use a compact, distinctive symbol that remains legible at small scale.
-- Do not copy a visual convention from another domain when it misrepresents the component.
-
-### 7.3 Semantic icon synthesis
-
-For each nontrivial custom Icon:
-
-1. read the class name and description;
-2. inspect connectors and their semantics;
-3. inspect equations/contained components only as needed to understand function;
-4. identify 1–3 characteristic engineering features;
-5. draw those features with Modelica vector primitives;
-6. reserve connector zones so graphics do not collide with ports;
-7. preserve family resemblance across related classes;
-8. keep the result legible when zoomed out.
-
-Use `Rectangle`, `Ellipse`, `Line`, `Polygon`, `Text`, and other native Modelica primitives where practical. Avoid raster `Bitmap` graphics unless there is a strong engineering reason.
-
-A generic rounded rectangle is acceptable only as a temporary F0 placeholder. Do not declare visual completion while recognizable components still use placeholders.
-
-### 7.4 Preserve hand-tuned graphics
-
-Graphical regeneration must be **non-destructive by default**.
-
-- Analyze before modifying.
-- Preview/diff graphical changes where the toolchain permits.
-- Fill missing annotations or make targeted edits.
-- Never erase existing hand-tuned `Placement`, `Line`, `Icon`, or `Diagram` annotations merely to re-layout the model unless the user explicitly requests regeneration.
-- After graphics-only edits, validate that the model still loads/flattens and that no physical/equation semantics changed.
-
-### 7.5 Diagram layout
-
-Treat Diagram as an engineering navigation surface, not decoration.
-
-Prefer:
-
-- a clear dominant flow or information direction;
-- external ports on the perimeter;
-- grid-aligned components;
-- functional grouping and domain/network lanes where useful;
-- short, mostly orthogonal routes;
-- dedicated corridors for shared networks/buses;
-- minimal crossings and wrap-around lines;
-- feedback loops placed deliberately rather than left to accidental routing;
-- sufficient whitespace;
-- intuitive drill-down from experiment → system → subsystem → component → core.
-
-When the model has many connections, reason from the connection graph: identify main paths, strongly connected/feedback groups, branches, and shared buses before placing components.
-
-Use live `DynamicSelect` displays only for a small number of high-value operating states/KPIs. Keep large telemetry sets in results/observers rather than crowding Icons.
-
-### 7.6 Visual quality gate
-
-Do not claim the graphics are complete until you have checked:
-
-- semantic recognizability;
-- family consistency;
-- connector alignment and stable port-side conventions;
-- label legibility;
-- off-canvas objects;
-- line crossings and unnecessary bends;
-- misleading direction or domain styling;
-- readability at normal and zoomed-out views;
-- preservation of existing hand-authored detail.
-
-Use `scripts/audit_modelica_visuals.py` for static heuristics, then perform visual inspection through OMEdit/MCP or available screenshots when possible.
-
-Read `references/visual-language.md` for the full visual grammar.
-
----
-
-## 8. Use Excel/CSV/JSON as configuration front-ends, not solver dependencies
-
-A robust flow is:
-
-```text
-engineering configuration source
-          ↓
-schema / unit / range / mapping validation
-          ↓
-resolve baseline + explicit overrides
-          ↓
-optional derived or precomputed artifacts
-          ↓
-generated Modelica records + local data
-          ↓
-resolved snapshot + audit summary
-          ↓
-Modelica experiment
-```
-
-### Separate parameter semantics
-
-Distinguish at least:
-
-1. design parameters;
-2. operating case/scenario;
-3. initial conditions;
-4. control/calibration;
-5. simulation settings;
-6. external resource metadata.
-
-They may share one workbook, but should not share ambiguous ownership.
-
-### One baseline, explicit overrides
-
-Keep one authoritative Modelica-side baseline.
-
-Generated configuration should identify baseline vs override, convert engineering units centrally, avoid duplicating all default literals in generator code, and emit a resolved run snapshot when needed for reproducibility.
-
-### Runtime isolation
-
-Unless file I/O is intentionally part of modeled behavior, the solver run should not need to:
-
-- parse Excel;
-- invoke Python merely to resolve parameters;
-- access the internet;
-- mutate source configuration;
-- download missing resources.
-
-Use deterministic local generated artifacts.
-
-Read `references/configuration-pipeline.md`.
-
----
-
-## 9. Keep derived quantities single-sourced
-
-Do not maintain the same physical or logical fact independently in several places.
-
-Examples:
-
-- total properties derived from component properties;
-- pressure/flow from the physical network instead of duplicate status variables;
-- voltage/current from the electrical model instead of mirrored parameters;
-- temperature from the thermal state;
-- operating mode from the authoritative state machine;
-- KPIs from authoritative source variables.
-
-Never use Icon/Diagram coordinates as physical installation geometry.
-
-For important outputs preserve traceability:
-
-```text
-source variable(s) → transformation → published quantity
-```
-
----
-
-## 10. Make observability a first-class layer
-
-Recommended pattern:
-
-```text
-authoritative internal states
-          ↓
-   read-only observer(s)
-          ↓
-named engineering outputs / KPIs / health states
-          ↓
-results, dashboards, safety analysis, external software
-```
-
-Observers may rename, convert units, aggregate KPIs, and classify health/status.
-
-Observers should not reimplement physics or feed back into the system unless they are explicitly a controller/estimator.
-
-Maintain field-level traceability for important published variables.
-
-When running a model, the agent should inspect relevant outputs directly instead of asking the user to “look at the plot” or “check whether it moved.”
-
----
-
-## 11. Manage fidelity deliberately
-
-Do not maximize detail everywhere.
-
-Use a replaceable fidelity ladder where useful:
-
-- **F0** — interface stub / architecture bring-up;
-- **F1** — algebraic/static/map model;
-- **F2** — reduced dynamic model with dominant states;
-- **F3** — detailed native physical model;
-- **F4** — C/FMU/external solver/software implementation.
-
-Not every component needs every level.
-
-Choose fidelity from:
-
-- effect on required KPIs;
-- coupling strength;
-- relevant time scales;
-- safety/decision criticality;
-- available parameters/data;
-- computational budget.
-
-F1 may be the correct final model for a low-impact unit.
-
-Read `references/fidelity-and-performance.md`.
-
----
-
-## 12. Diagnose Modelica in stages, not by trial-and-error
-
-A successful simulation is not proof of a correct model, and a failed simulation is not automatically a solver problem.
-
-Use this staged diagnostic ladder:
-
-```text
-D0  static inventory / dependency / visual audit
- ↓
-D1  load + checkModel / basic balance and lookup
- ↓
-D2  instantiate / flatten
- ↓
-D3  translate + build
- ↓
-D4  initialize + nominal simulate
- ↓
-D5  inspect trajectories, invariants, events, KPIs
- ↓
-D6  profile expensive blocks/functions/nonlinear systems if needed
- ↓
-D7  trace a suspicious variable/path back to authoritative sources
-```
-
-### 12.1 Failure classification
-
-Classify the primary failure before changing code:
-
-- package/load/path/library-version problem;
-- unresolved name/type/unit/connector mismatch;
-- under-/over-determined or structurally singular model;
-- initialization inconsistency;
-- algebraic loop or nonlinear-system convergence;
-- excessive switching/zero-crossings/events;
-- stiffness/time-scale problem;
-- duplicated or unnecessary state/physics;
-- result-writing/output overhead;
-- external file/C/FMU/software boundary problem;
-- graphics-only source corruption/regression.
-
-### 12.2 OpenModelica staged gates
-
-When using OMC, prefer the scripting sequence `checkModel` → `instantiateModel` → `buildModel` → `simulate`, reading `getErrorString()` after each gate.
-
-If a model is slow, use OpenModelica profiling only after a normal run establishes the baseline. Record frontend/backend/codegen/compile/simulation/total times when available.
-
-If an explicit runtime budget exists, enforce it. Do not allow a known-bad simulation to run indefinitely; stop it at the agreed ceiling, diagnose, simplify, and retry.
-
-### 12.3 Diagnose before tuning
-
-Do **not** start with:
-
-- loosening tolerance;
-- changing solver randomly;
-- disabling warnings;
-- increasing iteration limits blindly.
-
-First identify structural, event, initialization, or modeling causes. Solver changes are justified only after the model-level cause is understood.
-
-### 12.4 Preserve evidence
-
-Record in the single cumulative report:
-
-- which diagnostic stage failed or passed;
-- exact error/warning class and representative message;
-- root-cause interpretation;
-- file/class changed;
-- corrective action;
-- re-test result;
-- remaining risk.
-
-Use `scripts/diagnose_openmodelica.py` as a lightweight OMC staged runner when appropriate, and `scripts/audit_modelica_project.py` for static inventory.
-
-Read `references/diagnostics-and-performance.md`.
-
----
-
-## 13. Simulate as a closed observation loop
-
-Use the loop:
-
-```text
-build/validate
-    ↓
-simulate canonical case
-    ↓
-read key states + KPIs + events
-    ↓
-sanitary/physical checks
-    ↓
-compare with baseline/requirements
-    ↓
-modify one justified cause
-    ↓
-repeat
-```
-
-### Required post-run sanity checks
-
-For important variables/KPIs, check as relevant:
-
-- NaN/Inf or missing result channels;
-- impossible sign/range/unit behavior;
-- values pinned at initialization or saturation unexpectedly;
-- monotonic drift where equilibrium is expected;
-- unexpected discontinuities or event chatter;
-- violated conservation/reference constraints;
-- incorrect mode sequencing;
-- result trajectories inconsistent with known limiting cases;
-- KPI regression against the baseline.
-
-A clean solver exit means **execution passed**, not **engineering validity passed**.
-
-For parameter sweeps or variants, establish one stable canonical nominal case first.
-
-Read `references/simulation-observation-loop.md`.
-
----
-
-## 14. Precompute only weakly coupled expensive inputs
-
-External preprocessing is appropriate for data that does not need tight feedback from simulated states, such as long reference histories, ambient profiles, schedules, geometry preprocessing, measured boundary data, or other expensive static resources.
-
-Keep strongly coupled dynamics inside Modelica.
-
-For precomputed data preserve source/version, units, time semantics, coverage, interpolation assumptions, and deterministic regeneration as appropriate.
-
----
-
-## 15. Treat performance as an architecture requirement
-
-Track separately where possible:
-
-- load/check/flatten time;
-- translation/frontend time;
-- symbolic/backend time;
-- code generation/compile time;
-- initialization time;
-- integration/output time;
-- total wall time;
-- equations/variables/states;
-- zero crossings/events;
-- linear/nonlinear/mixed systems;
-- result size and stored sample count.
-
-Optimize in this order:
-
-1. remove duplicated/unnecessary states and physics;
-2. reduce detail not required by the modeling contract;
-3. replace unjustified event-heavy switching with valid averaged/reduced behavior;
-4. simplify accidental algebraic complexity through architecture;
-5. reduce unnecessary cross-boundary coupling;
-6. precompute weakly coupled expensive data;
-7. reduce unnecessary result output;
-8. improve initialization/start values when evidence indicates this is the bottleneck;
-9. tune solver/settings only after structural issues are understood.
-
-For each performance change, compare **before vs after** on the same canonical case and confirm that required KPIs remain within acceptable deviation.
-
-Never use loose tolerance as a substitute for sound modeling.
-
----
-
-## 16. Verify more than “simulation completed”
-
-Use project-appropriate gates for:
-
-- **architecture** — dependency direction and ownership;
-- **strict white boxes** — visible connect-only topology where declared;
-- **interfaces** — compatibility, unit/reference semantics, ownership;
-- **configuration** — mapping, units, baseline/override, determinism;
-- **physical consistency** — valid ranges, conservation, references, initialization;
-- **behavior cores** — focused tests and limiting cases;
-- **system regression** — KPIs, envelopes, events, modes, observers;
-- **performance regression** — time/state/event/result growth;
-- **visual QA** — icons, routing, labels, navigation, readability;
-- **handoff reproducibility** — toolchain, configuration, command/entry point, results, and report agree.
-
-Preserve release evidence such as source version, resolved configuration, generated artifacts, external-resource metadata, verification summary, performance metrics, and toolchain version as needed.
-
-Read `references/verification-and-quality-gates.md`.
-
----
-
-## 17. Final-output contract: one cumulative Markdown report
-
-This is a mandatory default for this custom skill.
-
-### 17.1 User-facing final deliverables after an optimization cycle
-
-Unless the user explicitly requests additional deliverables, leave only:
-
-1. **the modeling/source artifacts** needed to use the model;
-2. **the requested simulation/result artifacts** needed to inspect/reproduce the results;
-3. **one complete cumulative `.md` engineering report**.
-
-Default report name:
-
-```text
-MODEL_ENGINEERING_REPORT.md
-```
-
-If a project already has an established report filename, update that file instead of creating a second report.
-
-### 17.2 Do not scatter reports
-
-Do not create separate user-facing files such as:
-
-```text
-architecture_report.md
-icon_report.md
-diagnosis_report.md
-optimization_notes.md
-test_summary.md
-simulation_summary.txt
-final_assessment.html
-```
-
-unless the user explicitly asks for them.
-
-Tool-generated temporary logs, build folders, profiler HTML, intermediate JSON/XML, compiler output, and caches may exist during work. Treat them as **intermediate evidence**, summarize what matters into the cumulative Markdown report, and clean them up or keep them in an explicitly internal/generated area if the toolchain requires them. Do not present them as separate final deliverables by default.
-
-### 17.3 The report is cumulative, not a thin change log
-
-Every completed cycle updates the same report so a new engineer can understand the final state without reconstructing previous chats.
-
-The report should include, as applicable:
-
-1. project/task objective and scope;
-2. starting baseline and source inventory;
-3. toolchain/library/version information;
-4. modeling contract and performance budget;
-5. architecture and decomposition;
-6. key assumptions and simplifications;
-7. interface semantics and state ownership;
-8. white-box/black-box/fidelity decisions;
-9. configuration/parameter pipeline;
-10. Icon/Diagram visual grammar and graphical changes;
-11. all material model/code/config changes, organized by class/file;
-12. diagnostic process, failures, root causes, and fixes;
-13. simulation setup and canonical entry point;
-14. key result/KPI interpretation;
-15. before/after performance comparison;
-16. verification and regression evidence;
-17. known limitations, residual warnings, and unresolved issues;
-18. engineering evaluation: correctness, readability, maintainability, replaceability, observability, fidelity, performance, and extensibility;
-19. recommended next steps, ordered by value/risk;
-20. final deliverable inventory and reproducibility instructions.
-
-Do not paste large source files or full solver logs into the report. Summarize them and cite file/class/result paths inside the project.
-
-Use `templates/engineering-report-template.md` as the default structure and read `references/output-and-reporting.md` for detailed rules.
-
----
-
-## 18. Workflow for a new project
-
-1. Write the modeling contract, including report path and performance budget.
-2. Inventory available libraries, equations, data, code, and tool constraints.
-3. Verify key Modelica/MSL names instead of guessing them.
-4. Define system boundary and authoritative KPIs.
-5. Define functional/process decomposition.
-6. Identify actual shared coupling domains; do not assume them.
-7. Build the interaction matrix.
-8. Define interfaces and state ownership.
-9. Define project visual grammar.
-10. Establish package/layer ownership.
-11. Build F0/interface-stub architecture first.
-12. Establish one canonical executable nominal case.
-13. Run D0–D4 staged diagnostics before adding detail.
-14. Replace high-priority stubs with F1/F2 behavior cores.
-15. Build configuration generation and resolved snapshots.
-16. Add observers/KPIs and traceability.
-17. Add strict graphical white boxes where topology should be inspectable.
-18. Upgrade semantic Icons/Diagrams after interface geometry stabilizes.
-19. Add F3/F4 fidelity only where justified.
-20. Add static, physical, behavioral, visual, and performance regression checks.
-21. Freeze stable boundaries before external C/FMU/software integration.
-22. Update `MODEL_ENGINEERING_REPORT.md` and remove/suppress redundant final reports.
-
-Validate **architecture and parameter flow before detailed fidelity**.
-
----
-
-## 19. Workflow for refactoring an existing project
-
-1. Inventory classes, connectors, equations, scripts, resources, runnable entries, and current result files.
-2. Establish the existing canonical run and record baseline KPIs/performance if it runs.
-3. Identify duplicated physics, duplicated parameters, hidden topology, unstable interfaces, and weak graphics.
-4. Classify each class as interface/type, behavior core, graphical assembly, hybrid adapter, configuration, or experiment/test.
-5. Run staged diagnosis to separate structural errors from runtime/performance problems.
-6. Extract hidden behavior from architecture classes into cores.
-7. Consolidate defaults and external configuration.
-8. Redesign overloaded interfaces.
-9. Derive true shared coupling domains from the actual connection graph.
-10. Standardize and then semantically strengthen Icons/Diagrams after interface geometry stabilizes.
-11. Add observers and source traceability.
-12. Establish nominal regression and performance baselines.
-13. Simplify high-cost/low-value detail.
-14. Re-run the canonical case and compare KPI/performance changes.
-15. Add new fidelity or co-simulation only after the architecture is stable.
-16. Update the one cumulative report with baseline, changes, evidence, evaluation, and next steps.
-
----
-
-## 20. Workflow for diagnosing and optimizing a slow model
-
-1. Record the runtime ceiling and canonical experiment.
-2. Run static inventory; count states/equations/`when`/`der`/connections/visual coverage.
-3. Run load/check/flatten/build gates without a long simulation.
-4. Run a short or nominal simulation under the runtime ceiling.
-5. Record translation, compile, initialization, simulation, event, and result-writing evidence.
-6. If the bottleneck is unclear, enable OpenModelica profiling and inspect the highest-cost functions/equation systems.
-7. Rank candidate causes by estimated cost × engineering expendability.
-8. Apply one structural/fidelity/output change at a time.
-9. Re-run the same case and compare performance + KPIs.
-10. Reject “optimizations” that materially corrupt required behavior.
-11. Repeat until the performance budget is met or the report clearly explains the remaining constraint.
-12. Put all diagnostic and optimization evidence into `MODEL_ENGINEERING_REPORT.md`; do not leave separate final diagnostic reports.
-
----
-
-## 21. Anti-patterns
-
-Avoid:
-
-- forcing every system into the same physical domains;
-- adding empty shared networks solely for symmetry;
-- one giant top model containing architecture, equations, controller logic, parsing, and UI;
-- hundreds of manual top-level modifiers;
-- direct Excel parsing during ordinary solver execution;
-- using graphical coordinates as physical geometry;
-- copying baseline values independently into Modelica and generator scripts;
-- generic identical icons for unrelated equipment;
-- deleting hand-tuned graphical annotations during automated re-layout without explicit approval;
-- decorative icons that do not represent engineering function;
-- dynamic text dashboards inside every component;
-- signal approximations of real conservation networks without justification;
-- hidden public topology through inheritance;
-- maximum fidelity before interface validation;
-- random solver changes as the first debugging step;
-- solver-tolerance changes as the first performance fix;
-- claiming success because the solver exited cleanly;
-- asking the user to inspect results that the agent can read itself;
-- generated files that users must manually edit;
-- published telemetry/KPIs with no authoritative source trace;
-- multiple fragmented final reports after one optimization cycle.
-
----
-
-## 22. Definition of done
-
-Adapt this checklist to project scope:
-
-- [ ] purpose, boundary, fidelity, outputs, and performance budget are documented;
-- [ ] layer responsibilities and dependency direction are clear;
-- [ ] functional/process decomposition is explicit;
-- [ ] shared coupling domains come from the actual system rather than a template;
-- [ ] interface semantics and state ownership are documented;
-- [ ] public architecture is understandable through Icon/Diagram navigation;
-- [ ] meaningful engineering components use semantic icons rather than generic placeholders;
-- [ ] Diagram routing is readable and major connections are visually traceable;
-- [ ] graphics-only edits preserve model semantics and hand-tuned work unless regeneration was requested;
-- [ ] strict white boxes are connect-only, or hybrid exceptions are deliberate and documented;
-- [ ] behavior cores own equations/algorithms and state their fidelity boundary;
-- [ ] at least one reproducible canonical experiment exists;
-- [ ] configuration has an authoritative baseline and traceable overrides;
-- [ ] generated artifacts are deterministic and runtime-local;
-- [ ] important derived quantities have one source of truth;
-- [ ] observers/KPIs are read-only and traceable;
-- [ ] fidelity choices are intentional and replaceable;
-- [ ] staged load/check/flatten/build/simulate diagnostics pass or remaining failures are explicitly characterized;
-- [ ] successful simulations have undergone sanity/physical checks;
-- [ ] architecture, physical, behavioral, visual, and performance gates pass to the required level;
-- [ ] C/FMU/software integration can use stable boundaries when required;
-- [ ] final user-facing artifacts obey the one-report contract;
-- [ ] `MODEL_ENGINEERING_REPORT.md` contains the complete process, evidence, summary, evaluation, limitations, and next steps;
-- [ ] a new engineer can configure, run, inspect, diagnose, and extend the model without reverse-engineering the entire library or chat history.
-
----
-
-## 23. References and tools
-
-Read only what the task requires:
-
-- `references/modeling-decision-framework.md` — boundary, decomposition, domains, fidelity, completion criteria.
-- `references/architecture.md` — layering and functional/process × coupling architecture.
-- `references/visual-language.md` — semantic Icon/Diagram grammar, non-destructive visual workflow, routing and visual QA.
-- `references/configuration-pipeline.md` — external configuration → generated Modelica/local artifacts.
-- `references/interfaces-and-observability.md` — connector semantics, observers, C/FMU/software boundaries.
-- `references/fidelity-and-performance.md` — fidelity ladder, simplification, profiling principles.
-- `references/diagnostics-and-performance.md` — staged OpenModelica diagnosis, failure taxonomy, profiling and variable tracing strategy.
-- `references/simulation-observation-loop.md` — run/read/check/compare/iterate closed-loop workflow.
-- `references/openmodelica-toolchain.md` — OMC/OMEdit MCP usage, scripting gates, profiling, temporary evidence handling.
-- `references/output-and-reporting.md` — one cumulative Markdown report contract and cleanup policy.
-- `references/verification-and-quality-gates.md` — quality and release gates.
-- `references/open-source-inspirations.md` — public projects whose ideas informed this custom skill and how they were adapted.
-- `templates/modelica-patterns.md` — adaptable Modelica skeletons.
-- `templates/project-layout.md` — adaptable project layout.
-- `templates/engineering-report-template.md` — required default structure for the single final/cumulative `.md` report.
-- `scripts/audit_whiteboxes.py` — strict graphical-assembly checker; pass directories explicitly.
-- `scripts/audit_modelica_project.py` — static project inventory and coverage metrics.
-- `scripts/audit_modelica_visuals.py` — static visual-annotation heuristics.
-- `scripts/diagnose_openmodelica.py` — lightweight staged OMC check/flatten/build/simulate/profile runner.
-
-When a task ends, consolidate evidence into the one cumulative report instead of emitting separate diagnostic, visual, optimization, and validation documents.
+按用户指定格式交付有效工程、必要配置/结果和一份累积总结；默认不额外做数据图。报告实际变更、静态核对、真实运行、R/S/F 状态、已知限制和精确加载入口。ZIP 内保留一个活动语言根；版本化文件名不改变类目录。不清理未获授权资源，不替用户删除旧 skill 或改账号设置。

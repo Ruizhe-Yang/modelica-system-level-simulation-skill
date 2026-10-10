@@ -1,0 +1,21 @@
+{
+  "version": "0.8.0",
+  "root": "ExampleProject",
+  "entry": "ExampleProject.Simulation.CompleteMission",
+  "rename_descriptions": false,
+  "model_classes": [],
+  "field_labels": {},
+  "classes": {
+    "ExampleProject.Device": {
+      "title": "设备功能名",
+      "summary": "由维护者根据实际源码填写用途，不使用模板文字宣称实现。",
+      "fields": {},
+      "parents": [],
+      "resolved_types": {},
+      "limit": "由实际简化、有效域和现有证据填写。"
+    }
+  },
+  "class_comment_style": "chinese-purpose-only",
+  "connection_colors": {},
+  "reviewNote": "只有经真实类型核对的类名与connect端点对才能加入connection_colors；空表不推断颜色。"
+}

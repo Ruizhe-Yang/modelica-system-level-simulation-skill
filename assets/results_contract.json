@@ -1,0 +1,15 @@
+{
+  "schema": "MOSAIC-RESULTS-0.8",
+  "entryModel": "ExampleProject.Simulation.CompleteMission",
+  "signals": [
+    {
+      "id": "temperature",
+      "path": "system.temperatureMeasured",
+      "description": "被测对象温度读数",
+      "unit": "K",
+      "identity": "measurement",
+      "timeSemantics": "continuous",
+      "required": true
+    }
+  ]
+}

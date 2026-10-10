@@ -1,6 +1,8 @@
 interface:
-  display_name: "Modelica System-Level Simulation"
-  short_description: "Engineer, diagnose, visualize, and optimize Modelica systems"
-  default_prompt: "Use $modelica-system-level-simulation to inspect this Modelica project, improve it end to end, validate the result, and leave one cumulative Markdown engineering report."
+  display_name: "MOSAIC"
+  short_description: "Modelica总体建模规范：白箱、行为、接口与维护"
+  icon_large: "./assets/mosaic-logo.png"
+  brand_color: "#0B3D91"
+  default_prompt: "使用 $mosaic 按当前授权范围处理 Modelica 工程，逐角色核对白箱、行为与接口，区分必须、建议和参考，保护已有可用模型。"
 policy:
   allow_implicit_invocation: true

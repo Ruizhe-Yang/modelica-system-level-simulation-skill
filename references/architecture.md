@@ -1,120 +1,23 @@
-# Architecture rules
+# 架构落地：从用途到可维护工程
 
-## 1. Separate ownership categories
+本参考与 [模型角色详细合同](model_roles.md) 一起使用。TB/SB/AB 都是白箱，不再使用“只有显式声明严格白箱才遵循纯连接”的宽泛口径。透明适配是一种行为职责，放到 BU/LU 或显式装配，不作为上层隐藏方程的豁免。
 
-A useful domain-independent architecture distinguishes:
+## 建立新工程的顺序
 
-### Foundation
-Owns reusable semantics and behavior:
-- connectors and types;
-- equation cores;
-- algorithms/state machines;
-- reusable physical primitives not already available in trusted libraries;
-- calculations/functions;
-- adapters.
+先说明支持什么工程用途、输入边界和主要输出，再列真实组成与必要耦合；随后为每个行为和状态指定责任，定义端口与参数源。不要先复制某个领域的目录，再强迫对象迁就目录。
 
-### Configuration
-Owns static run definition:
-- default design records;
-- operating cases;
-- initial conditions;
-- control/calibration records;
-- generated overrides;
-- external resource metadata.
+结构视图和工作视图映射同一批实例。需要全局供回电路、参考坐标或跨系统信息分发时建立共享网络；没有的领域不凑空包。保留必要的动态、损耗、有限能力和反作用，在性能允许的范围内细化。
 
-### Components
-Own engineering identity and local composition.
+## 选择角色
 
-A component should expose stable interfaces and hide implementation detail that its parent does not need.
+完整实验为 TB；真实系统/集成为 SB；末级黑箱组合为 AB；内聚本构或算法为 BU；原生标准库或纯静态/显示别名为 LU。model/block 是语言种类，不是角色前缀。默认白箱用 model，纯因果信号组合可按合法 block 组织；已有可用结构不因关键字不同被机械改写。
 
-### Systems
-Own aggregation and integration.
+AB 不嵌套 AB/SB 的含义是“末级装配的分类准确”。需要更深系统组织时将该边界按 SB 登记，无须改自然名称；本次纯辅助任务不能据此拆源代码。单实例包装有实质接口/安装/替换价值时可以按系统边界保留；无价值包装建议消除。
 
-Substructure may be organized by:
-- function;
-- process section;
-- equipment train;
-- spatial region;
-- organizational ownership;
-- shared coupling network.
+## 建模师应能直接完成的操作
 
-### Experiments
-Own execution context:
-- nominal case;
-- variants;
-- validation tests;
-- benchmarks;
-- fault cases when relevant.
+从入口找到系统，打开 Diagram 看组成，沿端口找到交互，进入 BU/LU 看本构和初态，在唯一设计记录中修改参数，经离线生成使当前源码生效，在原始结果中找到对应的有注释变量。升级单元时能列清受影响接口、配置、图形和证据，而不需要每次重写整个工程。
 
-## 2. Architecture is a graph, not only a tree
+## 保留和改进既有工程
 
-The package hierarchy is a storage/navigation tree. The engineering system is usually a graph.
-
-Preserve cross-cutting interactions explicitly with connectors and, where useful, dedicated shared-network models.
-
-Do not distort the physics simply to fit the folder hierarchy.
-
-## 3. Functional/process × coupling matrix
-
-Create the matrix before the top diagram.
-
-Example with abstract domains:
-
-| Unit | Primary flow | Support network | Control/data | Environment |
-|---|---:|---:|---:|---:|
-| A | ✓ | ✓ | ✓ |  |
-| B | ✓ |  | ✓ | ✓ |
-| C | ✓ | ✓ |  |  |
-
-Use actual domain names in a real project.
-
-The matrix should drive:
-- connector presence;
-- shared networks;
-- boundary adapters;
-- top-level routing.
-
-## 4. Boundary ownership rule
-
-For every interface quantity, answer:
-- Who owns the state?
-- Is it an effort/flow variable, potential, conserved flow, command, measurement, state, or event?
-- Which side may write it?
-- What unit/frame/reference applies?
-- Is it continuous or discrete?
-- Does it belong in configuration or runtime state?
-
-If ownership is unclear, do not implement the interface yet.
-
-## 5. Stable boundaries, replaceable internals
-
-Prefer an architecture where a component implementation can move between fidelity levels without parent changes.
-
-A replacement may be:
-- another Modelica model;
-- a replaceable/redeclare variant;
-- C wrapper;
-- FMU;
-- external controller/software.
-
-Avoid leaking internal states into parent-level logic unless those states are intentionally part of the contract.
-
-## 6. Use inheritance carefully
-
-Inheritance is useful for:
-- common icon bases;
-- connectors/types;
-- partial equation bases when mathematically appropriate;
-- standardized interfaces.
-
-Avoid inheritance that hides significant topology in public graphical assemblies. A user opening the Diagram should not need to search a deep inheritance chain to understand what is connected.
-
-## 7. Keep overall models boring
-
-A good overall model primarily:
-- instantiates major subsystems/networks;
-- injects configuration;
-- connects boundaries;
-- exposes observers/results.
-
-If the overall model contains detailed equations, repeated modifiers, controller algorithms, data parsing, or ad-hoc result logic, move those responsibilities down to the proper layer.
+已有用户认可的工程是可用基线；没有明确行为改进授权，不因规范修订重构模型。分类不清、缺少声明、未知继承等可以记录为待补映射，不能据此虚构已经检查通过。获授权的行为细化再按接口、状态和用途合同逐项核查。
