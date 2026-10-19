@@ -1,117 +1,132 @@
 ---
 name: mosaic
-description: Build and maintain Modelica system-level models using the concrete MOSAIC modeling standard. Use for TB/SB/AB whitebox composition, BU behavior and MSL reuse, interface/state/configuration reviews, Documentation and result comments, Modelica Icon/Diagram and connection-color maintenance, diagnostics, simulation, and scoped auxiliary patches. Preserve the requested change boundary and accepted working source; do not trigger physics refactoring for documentation or graphics work.
+description: Build, review and maintain Modelica system-level models with the MOSAIC standard. Use for TB/SB/AB whitebox composition, BU behavior and MSL reuse, business composite interfaces, visible connections, state/configuration contracts, Documentation and result metadata, Modelica Icon/Diagram and connection colors, formatting-only patches, interface refactoring, diagnosis and regression. Read the actual project, preserve approved baselines, and keep every action inside the requested change scope.
 license: GPL-3.0; see LICENSE
-compatibility: Python 3.10+ for bundled static helpers. A separately installed Modelica engine is required for compilation and simulation. MAT metadata inspection additionally needs scipy/numpy. No automatic network or software installation.
+compatibility: Python 3.10+ for static helpers. Compilation and simulation require a separately installed Modelica engine. MAT metadata inspection additionally requires numpy/scipy. No automatic network access or software installation.
 metadata:
-  version: "0.8.0"
-  standard: "MOSAIC v0.8"
+  version: "0.9.0"
+  standard: "MOSAIC v0.9"
 ---
 
 # MOSAIC｜Modelica 总体建模规范
 
 **Model the Whole as MOSAIC.**
 
-按实际系统组织模型，把装配、行为、接口、状态、配置和维护内容写清楚。规范是工程分工约定，不是另一个需要导入的 Modelica 库，不承诺仅遵守形式就自动达到实机精度。
+按实际系统组织模型，把装配、行为、接口、状态、配置和维护内容写清楚。MOSAIC 是工程分工规范，不是必须导入的运行库。按规则组织工程有助于复用与交接，物理可信度仍须按用途和实际证据判定。
 
-## 1. 先确定任务范围
+## 1. 先选任务模式，再确定修改集合
 
-读取当前用户要求、实际源代码、工程说明、配置和已认可基线。当前明确指令优先于旧提示词；不能从规范升级推导出源码全面重构的授权。默认中文说明，合法类名和已有入口保持。
+读取当前用户要求、实际源码、配置、工作规则和已认可基线。当前明确指令优先于旧提示词；规范升级不产生自动重构授权。使用 `assets/project_contract.json` 明确模式、白名单、结果合同、工具权限和停止条件；模板默认只读 AUDIT。
 
-| 工作模式 | 允许内容 | 保护边界 |
+| 模式 | 可以处理 | 必须保护 |
 |---|---|---|
-| NEW / REFINE | 已授权的模型、接口、配置、行为及闭环验证 | 原有有效用途；不擅自降低验收条件 |
-| CONFIGURE | 权威配置、离线生成、单位和消费者核对 | 不静默新增第二套默认值 |
-| AUDIT | 默认只读；记录角色、依赖、源事实与未知项 | 不因为发现差异直接改模型 |
-| DOCUMENTATION_ONLY | Documentation、声明字符串说明、明确发布元数据 | 所有行为、实际连接、图形与求解注解 |
-| CONNECTION_COLOR_ONLY | 实际 connect 的 Line.color | connect 端点、points、线宽、图标图案、所有行为 |
-| VISUAL_ONLY | 用户明确授权的 Icon/Diagram/Placement/Line | 字段类型、参数、初始化、状态、实际 connect |
-| RESULTS / DIAGNOSE | 真实结果、分层排查与必要的有限复现 | 不造数据，不把短诊断拼成完整任务 |
+| NEW / REFINE | 获授权的结构、行为、配置与真实闭环 | 原有有效用途和冻结验收条件 |
+| INTERFACE_REFACTOR | 获授权的端口、因果方向、访问范围、成员映射与 connect | 其余行为；验证展开网络、初始化、状态和结果路径，不能归类为绘图 |
+| CONFIGURE | 权威配置、离线生成、单位和消费者 | 不新增第二套默认值；生成器不回灌旧结构 |
+| AUDIT | 只读盘点、审查、缺陷和未知项登记 | 不能因发现差异就写入模型 |
+| DOCUMENTATION_ONLY | 类级 Documentation 与原声明 string-comment | 普通注释、计算、字段属性、图形、connect、求解与结果设置 |
+| CONNECTION_COLOR_ONLY | 真实 connect 的 Line.color | 端点、points、线宽、图标内 Line、所有行为与其他注解 |
+| VISUAL_ONLY | 明确授权的 Icon / Diagram / Placement / 连接 Line | connector 类型、方向、访问范围、参数、初态、connect 端点、求解和结果设置 |
+| AUXILIARY_ONLY | 明确组合的文稿和真实连接色 | 不自动豁免其他图形或任何行为 |
+| FORMAT_ONLY | 字符串和注释之外的空白排版 | 字符串、普通注释、计算与图形 Token、语句顺序和所有版本文字 |
+| RESULTS / DIAGNOSE | 真实结果、分层定位及获授权的必要复现 | 不造数据，不把短诊断拼为完整任务 |
 
-多个辅助模式可由用户明确组合。发现范围外行为缺陷时记录位置与影响，不擅自修复。辅助维护不自动进入仿真调参循环。
+根发布版本仅在用户要求时额外允许，MSL 依赖版本不能一起替换。发现范围外缺陷，报告事实与影响，不擅自修改。未授权仿真的辅助工作不进入调参循环。
 
 ## 2. 规范等级与角色底线
 
-先读 [完整 M01—M36](references/standard.md)，涉及架构时再读 [角色详细合同](references/model_roles.md)。本版 **26 项 R 必须、9 项 S 建议、1 项 F 参考**。A/B/C/D 附录均为参考；只有项目明确选用的附加要求才加入该任务检查集。
+先读 [完整36条主规范](references/standard.md)。**26项R必须、9项S建议、1项F参考**；[36项新要求映射](references/release_mapping.md) 是来源索引，不是额外36条主规范。U-A01—U-H05、主条号 M01—M36、Codex C01—C10 和历史 G01—G136 各自区分。
 
-**TB、SB、AB 全部是白箱，不存在默认宽松、可选严格两套定义。** 有效本层只声明、配置和连接；检查继承与 modifier，不只搜索当前文件的 equation。物理/控制行为必须有明确承担者。
+**TB、SB、AB 全部是白箱。BU 禁止 connect 和独立运行 model/block 子实例。LU 原库内部结构保留。** 检查本类、继承、重声明与 modifier，不能只查文件名或当前 equation 段。
 
 | 角色 | 应有内容 | 不应有内容 |
 |---|---|---|
-| TB 顶层盒 | 完整实验、生效配置、对象/边界/必要上下文、connect、实验设置 | 本层控制律、积分、任务算法、初始补方程；被当作功能子实例 |
-| SB 系统盒 | 实际集成边界、公开接口、静态配置分配、SB/AB/BU/LU 和可导航 Diagram | 本层胶水计算、隐藏状态、跨层穿透 |
-| AB 装配盒 | 末级 BU/LU 装配、共同边界和 connect；两个及以上有实际作用的叶子 | 本层行为、AB/SB 嵌套却仍称末级装配、无意义实例凑数 |
-| BU 行为单元 | 内聚方程/算法、参数、端口、变量、必要状态与初始化 | 独立运行 model/block 子实例，包括 MSL 运行组件 |
-| LU 库复用单元 | 原始 MSL，或只改静态参数/呈现的别名；原库内部结构保留 | 新增本构/状态/输出计算后仍称纯库别名 |
+| TB 顶层盒 | 完整实验、配置、对象/环境/任务/结果边界、必要上下文、connect、实验设置 | 本层控制律、积分、任务算法、初始化补方程；作为系统的功能子实例 |
+| SB 系统盒 | 真实集成边界、公开端口、静态配置、SB/AB/BU/LU、可导航 Diagram | 本层胶水计算、隐藏状态、跨层穿透 |
+| AB 装配盒 | 两个及以上有实际作用的 BU/LU、共同边界与 connect | 本层行为、系统/装配嵌套、无意义实例凑数 |
+| BU 行为单元 | 不可再分的内聚机制或必要转换；参数、端口、方程/算法、状态、初态 | connect；独立运行子组件；为接口集成把已有系统装进“大BU” |
+| LU 库复用单元 | 原生MSL或只改静态参数/呈现的别名 | 修改原库；新增行为后仍标纯库别名 |
 
-固定维数、仅含 connect、可确定展开的静态 for/if 连接模板和经检查的白箱继承可用。它们不是允许在白箱加入计算的例外。常量运行输入也采用显式源连接，`component(u=1)` 不是参数配置。已认可工程可以继续保留；角色重新识别不等于本次授权改动行为。
+优先 **多SB＋多AB＋多LU＋尽可能少BU**，不设数量占比。静态参数、可静态展开且只含 connect 的 for/if 模板可用；`child(u=source.y)` 和 `child(u=1)` 都是禁止的白箱运行输入绑定。普通转换优先 MSL，必要自有行为才建 BU。
 
-TB/SB/AB/BU/LU 是概念，不是命名前缀。允许 MSL 传感器；图标、逐类说明、语言和目录习惯按建议，不复活旧禁令。默认以自有源码与 MSL 4.0.0 为原生依赖；既有冻结版本不擅自升级。外部集成仅按明确批准的项目 profile。
+角色不是命名前缀。允许MSL传感器。接口整合、图标外框、左入右出、中文文稿和 Scripts 目录属建议作者配置；需要时显式选用 `assets/authoring_profile.json` 为 PROJECT_REQUIRED，不暗中改变R/S/F。已经选用的真实类型、语义、来源和可见拓扑仍满足R条。
 
-## 3. 按任务读取，不把所有长文一次塞入上下文
+## 3. 按任务读取参考
 
-| 任务 | 参考文件 |
+| 任务 | 文件 |
 |---|---|
-| 架构、五角色、白箱语法、支撑类内容 | [model_roles.md](references/model_roles.md)、[architecture.md](references/architecture.md) |
-| 接口、状态、参数与输出最小合同 | [interfaces_contracts.md](references/interfaces_contracts.md)、[MSL 接口目录](references/msl_interfaces.md) |
-| 配置与曲线生成、消费、单位 | [configuration.md](references/configuration.md) |
-| 文档清理、名称去重、结果字段说明 | [documentation.md](references/documentation.md) |
-| 模型图标、父层布局、MSL 派生/自定义线色 | [visuals.md](references/visuals.md) |
-| MOSAIC 自己的品牌与文档样式 | [brand.md](references/brand.md) |
-| 诊断、编译、结果与性能 | [verification.md](references/verification.md)、[evolution.md](references/evolution.md) |
-| Codex 执行、范围、停止与交付 | [codex.md](references/codex.md) |
-| 旧条号/旧 skill 迁移 | [traceability.md](references/traceability.md)、[upgrade.md](references/upgrade.md) |
+| 五角色、18类白箱语法与支撑类明细 | [model_roles.md](references/model_roles.md)、[architecture.md](references/architecture.md) |
+| 具名复合接口、局部分接、字段合同、幽灵端口 | [interfaces_contracts.md](references/interfaces_contracts.md)、[24类MSL接口](references/msl_interfaces.md) |
+| 离线配置、纯模型执行、生成器防回退 | [configuration.md](references/configuration.md) |
+| 文档、名称、结果注释、纯排版 | [documentation.md](references/documentation.md) |
+| 图标、全部连线可见、端点、默认线色 | [visuals.md](references/visuals.md) |
+| 原MOSAIC标识与蓝白文档样式 | [brand.md](references/brand.md) |
+| 诊断、分层证据、接口回归与性能 | [verification.md](references/verification.md)、[evolution.md](references/evolution.md) |
+| Codex实施、最终回归、失败后继续修复 | [codex.md](references/codex.md) |
+| v0.9融合与替换旧skill | [release_mapping.md](references/release_mapping.md)、[upgrade.md](references/upgrade.md) |
+| 历史索引和来源边界 | [traceability.md](references/traceability.md)、[sources.md](references/sources.md) |
 | 唯一具体项目案例 | [12ucubesat.md](examples/12ucubesat.md) |
 
-## 4. 新建或行为改进
+## 4. 接口集成与模型更新
 
-明确用途、任务时域、构型、边界、关键结果、必需检查与预算。列实际组成、必要物理/信息耦合、每个状态的唯一拥有者，再设计公开接口和数据合同。
+同一业务的多个量优先采用具名复合接口，在边界整接口连接；接收者只消费所需字段。在所属 SB/AB 中以 `connect(bus.field, component.port)` 接入MSL标量口，不用白箱等式或BU内connect作分接。删除“总线→多余边界标量→再次汇总”的无意义回路时，保留必要父子边界转发；不要退回密集外露端口来掩盖问题。
 
-先做最小真实闭环，再局部细化。装配层只连接；传感、单位转换、仲裁、积分和查表各归明确行为/库单元。命令、实际作用、测量、估计和只读诊断分别定义。单位换算、额定基准、曲线和初态同源消费。为满足目标直接令真实状态等于参考值不是建模。
+逐层、逐成员核对生产者、消费者、单位、维数、方向、时间及有效性。不能把混合总线全改为output，也不能删方向消除告警。物理势/flow/stream/参考关系不改为普通Real总线。
 
-实际验证按加载/依赖 → 展开/平衡 → 编译 → 初始化/积分 → 原始结果 → 项目指标/独立守恒 → 必要性能定位推进。单次超时、短诊断和旧结果不冒充当前完整任务。没有引擎就标 NOT_RUN，不制造 MAT 或 PASS。具体硬秒数、状态规模和图数不是通用规范。
+每条源级connect在声明白箱的有效Diagram有可辨Line；protected本地端口仍在本层可见。禁止visible=false、零线宽、零尺寸/画布外端口掩盖接线。数组模板与继承需要进一步展开核对，不以源级扫描冒充展开检查。
 
-## 5. 文档、名称与线色维护
+删除接口、调整因果性/访问范围或重写connect属于语义修改，即使公式和方程数没变。冻结可信基线和回归合同，按初始化、连续轨迹、离散顺序及结果路径验收。参数和曲线在准备阶段固化到.mo；生成器不得恢复旧接口、旧文稿、幽灵端口或旧配色。
 
-文档写用途、必要接口/配置、组成或行为、真实状态和使用限制。不逐类生成通用的“连接与责任”统计、“仿真后如何查看”教程或“Documentation 辅助更新……”免责声明。删套话不等于删真实限制、许可、初始化或有效域说明。
+## 5. 文稿、名称、图形与格式
 
-模型树由工具显示 `ClassName (description)` 时，声明只写中文用途：`model Device "设备中文用途"`。不要写成 `"Device（设备中文用途）"`。不改 ClassName、within、实例名或结果路径。结果栏注释用原声明的 string-comment，不新增输出方程、改 unit/HideResult/保存过滤器；旧结果不会自动更新描述。
+说明根据实际源码写用途、接口/参数、组成或行为、真实初态和有效限制；不写不存在成员，不逐类堆重复路径、版本、通用查看教程与审计套话。保留许可与真实限制。模型树自动显示类名时，string-comment只写中文用途，不重写英文标识符。结果注释写在真实声明上，不新增输出方程、状态或结果别名；未生成新结果只能声明源码注释已更新。
 
-连线先追溯两个端点的真实类型、别名/extends、成员路径。MSL 及其派生用原族默认色；自定义整体连接用已核对主色。自定义总线内 MSL 类型成员仍按该成员的 MSL 颜色，不能跟随整个总线。仅修改真实 connect 的 Line.color，不改图标内装饰线。不能通过一律删除 color 指望工具必然恢复原色。未知类型先报告，不凭名称或相邻线猜测。
+MSL/派生端口沿类型继承使用本族默认线色；自定义整体线用已审查主色，其中MSL成员仍使用成员的标准色。不凭图标第一块色或类名猜色；不以删除color证明恢复默认色。工具写入仅对已确认4.0.0的有限色表开放，其他版本须查实际源码扩展注册表。
 
-生成器的文档后处理与调色白名单须和本次新约定同步，防止下次生成恢复旧套话。输入数值/数学摘要与生成字节摘要分别维护，原 RunId 仍是历史证据。
+原生Icon、黑线微色、同族有区别、因果左入右出、核心模型突出是绘图建议。已认可图形不为无关补丁全面重绘；删低价值装饰不等于删除实际运行显示。移动实例须联动真实端点和父层画布，不能改connect端点来修正像素位置。
 
-## 6. 可执行辅助工具
+纯排版保留必要单个分节空行，不追求零空行。任何注释/字符串/图形Token改动都超出FORMAT_ONLY。图形参数按具体图元核对；空graphics的规避只针对确有兼容问题的目标软件。
 
-所有命令以本 skill 为当前目录；模型路径由当前任务填写。工具默认不安装软件、不联网、不运行物理模型。
+## 6. 可执行工具
+
+下列路径以本skill目录为当前目录；所有输出应放在审核工程之外。脚本不安装软件、不联网；只读核对不调用Modelica求解器。
 
 ```bash
-# 只读盘点；不是编译器或完整符合性证明。
+# 只读基础、显式角色和源级连接审查
 python scripts/audit_project.py /path/to/Project --output /path/to/audit.json
 python scripts/audit_roles.py /path/to/Project --roles /path/to/role-map.json --output /path/to/roles.json
+python scripts/audit_connections.py /path/to/Project --output /path/to/connections.json
 
-# 仅清理指定文稿内容，输出必须是新的独立候选目录。
-python scripts/clean_documentation.py /path/to/source /path/to/new-candidate --report /path/to/doc-cleanup.json
+# 安全格式候选：只整理非字符串/注释区域的尾空白和冗余空行，不承诺全语法缩进
+python scripts/format_modelica.py /path/to/source /path/to/new-candidate --report /path/to/format.json
+python scripts/verify_change_scope.py /path/to/source /path/to/new-candidate \
+  --mode format-only --output /path/to/protected-diff.json
 
-# 先只读线色核对；确认任务允许后才增加 --apply。
-python scripts/connection_colors.py /path/to/Project --report /path/to/line-colors.json
+# 真实连接色审查；自定义主色先填表并人工确认reviewed=true
+python scripts/connection_colors.py /path/to/Project --msl-version 4.0.0 \
+  --palette /path/to/reviewed-palette.json --report /path/to/colors.json
+# 获授权后才在独立候选目录增加 --apply；未知或冲突连接时不写入
 
-# 精确辅助保护比较：颜色豁免仅在已授权调色时打开。
-python scripts/verify_aux_only.py /path/to/baseline /path/to/candidate \
-  --allow-root-version --allow-connection-colors \
-  --allowlist /path/to/exact-aux-files.json --output /path/to/protected-diff.json
+# 文稿清理候选及精确保护
+python scripts/clean_documentation.py /path/to/source /path/to/new-doc-candidate --report /path/to/docs.json
+python scripts/verify_change_scope.py /path/to/source /path/to/new-doc-candidate \
+  --mode documentation-only --output /path/to/doc-diff.json
 
-# 已审查类目录生成文稿，或读取现有结果元数据。
+# 根据已审查目录生成说明、核对真实结果元数据和合同结构
 python scripts/enrich_documentation.py /path/to/source /path/to/new-candidate --catalog /path/to/catalog.json
 python scripts/inspect_result_metadata.py /path/to/model_init.xml --csv /path/to/descriptions.csv
 python scripts/check_contract.py /path/to/results-contract.json
 python -m unittest discover -s tests -v
 ```
 
-只有 Documentation 的任务**不加** `--allow-connection-colors`；只增声明说明时连根版本开关也可不加。其他非 `.mo` 变更逐文件列白名单，白名单不等于文件内容已经人工正确。`audit_roles` 只核对提供的角色映射与有限静态结构；不可解析的 MSL 展开、redeclare 和静态模板保留待核，不报完整符合性 PASS。更多接口族需读取真实库源码扩充规则，不猜颜色。
+`verify_change_scope.py`支持format-only、documentation-only、connection-color-only、visual-only及auxiliary-only五种辅助保护模式；没有通用“忽略全部annotation”开关。根发布版本用明确的`--allow-root-version`；FORMAT_ONLY不允许该开关。非.mo文件的改动需要精确路径白名单，标为AUX_FILE_REVIEW另审，不等于通过。
 
-需要实跑且已获授权时，用 `run_guarded.py --cwd ... --timeout <项目秒数> --log ... --metadata ... -- <实际命令>` 做外部监督。工具可用状态、编译状态和运行状态分别登记。
+保留的`verify_aux_only.py`供旧生成钩子兼容；v0.9新任务优先用按模式隔离的`verify_change_scope.py`。这些检查是有限词法/源结构工具，不是完整解析器、因果证明、继承展开器或GUI验证器。未支持语法、未知端口、展开未核实应保持REVIEW_REQUIRED/NOT_CHECKED。
 
-## 7. 最后交付
+## 7. 终止条件与交付
 
-按用户指定格式交付有效工程、必要配置/结果和一份累积总结；默认不额外做数据图。报告实际变更、静态核对、真实运行、R/S/F 状态、已知限制和精确加载入口。ZIP 内保留一个活动语言根；版本化文件名不改变类目录。不清理未获授权资源，不替用户删除旧 skill 或改账号设置。
+源码检查、编译展开、动态结果和原生GUI四组证据分别记录，每个引擎/版本单独记状态。没有omc或目标软件时交付实际可完成的源检查并标NOT_RUN，不能把静态预览当软件截图。
+
+项目启用“最终一次完整回归”时，最终候选必须完成该任务并按预先冻结路径、容差与离散事件比较；必要诊断/失败后的修复不受“一次”数量限制。缺失列不填零，不删失败路径，不放宽阈值凑通过。当前任务未启用硬预算时，不继承案例秒数、方程数或连接数量。
+
+仅交付当前任务需要的工程、配置、真实结果和一份累积总结；Codex默认不制作仿真数据图。删除目录/根文件、启动GUI、推送仓库、安装或替换旧skill分别需要当前授权，不从任何案例的操作清单复制权限。

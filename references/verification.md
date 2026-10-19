@@ -32,6 +32,27 @@ MainConformance（R）、RecommendationAdoption（S）、ReferenceSelection（F�
 
 安装库源码优先于对类名/端口的记忆。外部资料主要约束物理边界/参数来源，未经提供的数值不要填零或制造标定。证据分类为用户来源、源码检查、原运行、当前运行、外部资料、工程假设。不能把绘图示例升为行为实现。
 
-## v0.8 具体静态工具范围
+## v0.9 具体静态工具范围
 
-`audit_roles.py` 只按提供映射进行有限源级审查，静态连接模板、未展开库继承和重声明可输出 REVIEW_REQUIRED。`connection_colors.py` 核对实际端点，不将 Icon 内 Line 当作连接线；支持族以工具注册表为准。`verify_aux_only.py --allow-connection-colors` 只豁免 connect 的 Line.color；points、thickness、Icon/Diagram原语、experiment、Evaluate 和普通字符串仍受保护。所有非 `.mo` 变化都应配精确白名单并单独审查。
+`audit_roles.py`只按显式映射作有限源级核对，新增BU直接与可解析继承connect检查。`audit_connections.py`枚举真实源级connect，检查缺失/隐藏Line、零线宽/长度、显式画布外路径和端口；模板展开、变换后的完整端点与因果性仍为待核。`connection_colors.py`按端点核对，有限MSL4.0.0色表和已审查自定义主色适用；未知不猜。
+
+`verify_change_scope.py`分别支持format-only、documentation-only、connection-color-only、visual-only、auxiliary-only。只豁免所选节点，保护全部其他注解、类型、方向、访问范围、start/fixed/nominal、HideResult、experiment和求解设置；不能把所有annotation从比较中删除。未变化文件只按字节核对，不重新解析；有变化却无法解析则REVIEW_REQUIRED。精确辅助路径白名单标AUX_FILE_REVIEW，仍需单独核对内容。
+
+`format_modelica.py`只在新候选中整理非字符串/注释的尾空白和重复空行，检查完整词法序列和幂等性；没有宣称是完整Modelica排版器。工具输出STATIC_SCOPE_MATCH也不等于工程编译或任务通过。
+
+## 接口重构的独立验收
+
+端口删除、访问范围和方向变化、成员重组、connect改写均属于语义变更。先冻结输入构型、初态、结果路径、连续量容差与离散比较方式。分析变更后的连接集及因果性、必要状态是否保留、初始化是否闭合。只保留公式或相同方程数不能证明等效；不能补虚假未知量或删守恒约束凑数。
+
+项目选用最终完整回归时，在最后候选上执行完整任务，保存原始数据并比对冻结合同。诊断短运行可以有多次，“最终一次”不允许失败即停止、不允许换路径/容差把失败移出合同。环境缺失时保持待验，不生成合成结果代替。
+
+## 四类证据相互独立
+
+| 证据层 | 可以支持的结论 | 不能替代 |
+|---|---|---|
+| 源码/词法/图形字段检查 | 已检查范围的源码事实和保护差异 | 展开、仿真、目标GUI |
+| 加载/展开/编译 | 指定引擎版本能处理该构型 | 完整动态结果与所有图形显示 |
+| 动态与结果检查 | 指定任务的轨迹、字段、初态与事件核对 | 未跑构型、其他引擎、实机可信度 |
+| 原生GUI人工/获授权检查 | 指定界面的真实显示、端口操作与渲染 | 数值正确性及其他平台 |
+
+本skill的自动化测试仅验证辅助工具及发布内容；案例中的历史运行事实保留来源版本，不改写成本次重跑。

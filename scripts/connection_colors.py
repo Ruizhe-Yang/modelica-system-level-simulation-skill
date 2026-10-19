@@ -130,7 +130,7 @@ def all_connections(src):
   yield {'class':owner,'start':m.start(),'end':end,'endpoints':endpoints,'line':line,'color':color}
 
 class Index:
- def __init__(self,root):
+ def __init__(self,root, reviewed_palette=None, require_reviewed_palette=False):
   self.root=Path(root);self.sources={};self.classes={};self.class_files={};self.custom_colors={};self.cat={}
   cp=self.root/'Scripts/DocumentationSupport/catalog.json'
   if cp.exists():self.cat=json.loads(cp.read_text())
@@ -152,6 +152,21 @@ class Index:
        sat=[(v,k) for k,v in colors.items() if max(k)-min(k)>30 and min(k)<200]
        if sat:self.custom_colors[c.full]=max(sat,key=lambda p:(p[0],max(p[1])-min(p[1])))[1]
        elif colors:self.custom_colors[c.full]=(0,0,0)
+  self.inferred_custom_colors=dict(self.custom_colors)
+  self.reviewed_custom_colors={}
+  if reviewed_palette is not None:
+   if not isinstance(reviewed_palette,dict) or reviewed_palette.get('reviewed') is not True:
+    raise ValueError('Custom palette must be explicitly reviewed')
+   if reviewed_palette.get('mslVersion')!='4.0.0':raise ValueError('Palette registry is fixed to MSL 4.0.0')
+   colors=reviewed_palette.get('customColors')
+   if not isinstance(colors,dict):raise ValueError('customColors must be a dictionary')
+   for name,color in colors.items():
+    if name not in self.classes or self.classes[name].kind!='connector':raise ValueError('Unknown custom connector '+name)
+    if any(msl_kind(a) for a in self.ancestry(name)):raise ValueError('MSL-derived color cannot be overridden: '+name)
+    if not isinstance(color,list) or len(color)!=3 or any(type(v)!=int or not 0<=v<=255 for v in color):raise ValueError('Invalid palette RGB')
+    self.reviewed_custom_colors[name]=tuple(color)
+  if require_reviewed_palette:self.custom_colors=dict(self.reviewed_custom_colors)
+  elif self.reviewed_custom_colors:self.custom_colors.update(self.reviewed_custom_colors)
  def resolve(self,t,context):
   t=base_name(t)
   if t.startswith('Modelica.') or t in ('Real','Integer','Boolean','String','enumeration'):return t
@@ -304,9 +319,14 @@ def main():
  p=argparse.ArgumentParser(description=__doc__)
  p.add_argument('root',type=Path);p.add_argument('--report',type=Path,required=True)
  p.add_argument('--apply',action='store_true',help='Explicitly authorize Line.color changes; default read-only')
+ p.add_argument('--palette',type=Path,help='Reviewed custom connector colors; unknown main colors are not guessed')
+ p.add_argument('--msl-version',help='Explicitly confirm installed MSL version; writing supports only 4.0.0')
  a=p.parse_args()
  try:
-  ix=Index(a.root);rows,edits=ix.inspect()
+  if a.msl_version and a.msl_version!='4.0.0':raise ValueError('Unsupported MSL version: registry requires actual-source review')
+  if a.apply and a.msl_version!='4.0.0':raise ValueError('--apply requires explicit --msl-version 4.0.0 confirmation')
+  palette=json.loads(a.palette.read_text(encoding='utf-8')) if a.palette else None
+  ix=Index(a.root,reviewed_palette=palette,require_reviewed_palette=True);rows,edits=ix.inspect()
   bad=[r for r in rows if r['status'] not in ('ALREADY_MATCHES','COLOR_CHANGED')]
   if a.apply and bad:raise ValueError('Unresolved/conflicting connections: no files written')
   if a.apply:
@@ -316,7 +336,8 @@ def main():
     f.write_text(after,encoding='utf-8')
   result={'scope':'MSL 4.0.0 finite static resolver; not compiler/GUI validation',
           'mode':'APPLIED' if a.apply else 'READ_ONLY','status':'PALETTE_RESOLVED' if rows and not bad else 'REVIEW_REQUIRED',
-          'connections':rows,'planned_or_applied_changes':sum(len(v) for v in edits.values())}
+          'version':'0.9.0','registryVersion':'4.0.0','semanticValidation':'NOT_CHECKED',
+          'customPaletteReviewed':bool(palette),'connections':rows,'planned_or_applied_changes':sum(len(v) for v in edits.values())}
   a.report.parent.mkdir(parents=True,exist_ok=True);a.report.write_text(json.dumps(result,ensure_ascii=False,indent=2),encoding='utf8')
   return 0 if rows and not bad else 2
  except (ValueError,OSError,KeyError) as e:p.error(str(e))

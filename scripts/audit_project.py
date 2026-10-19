@@ -17,7 +17,7 @@ def audit(root:Path)->dict:
         except Exception as exc:errors.append({'file':str(p.relative_to(root)),'error':str(exc)})
     names=[r['class'] for r in rows]
     duplicates=sorted({x for x in names if names.count(x)>1})
-    return {'tool':'MOSAIC source inventory','version':'0.8.0','scope':'Lexical evidence only. No flattening, inheritance expansion, simulation or physical certification.','status':'PARSED' if not errors and not duplicates and files else 'UNKNOWN','fileCount':len(files),'classCount':len(rows),'modelBlockCount':sum(r['kind'] in ('model','block') for r in rows),'documentationCount':sum(r['documentation'] for r in rows),'missingCommentCount':sum(len(r['missingComments']) for r in rows),'classes':rows,'duplicates':duplicates,'errors':errors}
+    return {'tool':'MOSAIC source inventory','version':'0.9.0','scope':'Lexical evidence only. No flattening, inheritance expansion, simulation or physical certification.','status':'PARSED' if not errors and not duplicates and files else 'UNKNOWN','fileCount':len(files),'classCount':len(rows),'modelBlockCount':sum(r['kind'] in ('model','block') for r in rows),'documentationCount':sum(r['documentation'] for r in rows),'missingCommentCount':sum(len(r['missingComments']) for r in rows),'classes':rows,'duplicates':duplicates,'errors':errors}
 def main():
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('root',type=Path);p.add_argument('--output',type=Path);a=p.parse_args()
     try:r=audit(a.root.resolve())

@@ -1,0 +1,475 @@
+{
+  "version": "0.9.0",
+  "source": "P06 用户提供的最新建模与交互规则汇总",
+  "sourceSha256": "f168d18b1c2bcd707cb4b3c0003ce87ffe4acd0ea41b508829e56da416e6d1e9",
+  "note": "U 前缀仅区分来源条号；不是新增36条独立主规范。等级以主条文与本映射的明确适用范围为准。",
+  "requirements": [
+    {
+      "id": "U-A01",
+      "sourceId": "A01",
+      "title": "MSL优先",
+      "sourceText": "架构采用 多SB＋多AB＋多LU＋尽可能少BU 。优先复用MSL；只有不可再分的复杂机制或必要数据转换才自建BU。MOSAIC是规范，不额外建立MOSAIC运行库；依赖版本按项目冻结。",
+      "primaryRule": "M01",
+      "relatedRules": [
+        "M05",
+        "M08"
+      ],
+      "grade": "S",
+      "integration": "MSL 优先是架构选择方向；依赖真实性和角色边界按 R 执行，不设数量占比。",
+      "source": "P06"
+    },
+    {
+      "id": "U-A02",
+      "sourceId": "A02",
+      "title": "按有效实现定角色",
+      "sourceText": "按下表审查本类及继承后的实现。不得以修改角色标签代替修复违规代码，也不得为接口集成新增“大BU”，把已有的系统装配与MSL组件包进黑箱。",
+      "primaryRule": "M05",
+      "relatedRules": [
+        "M08"
+      ],
+      "grade": "R",
+      "integration": "必须核对有效实现，禁止大 BU 隐藏原有装配及改标签放行。",
+      "source": "P06"
+    },
+    {
+      "id": "U-A03",
+      "sourceId": "A03",
+      "title": "白箱不做运行绑定",
+      "sourceText": "白箱允许静态参数计算、对子组件参数的修饰，以及可静态展开且仅含 connect() 的连接模板。禁止运行等式、算法、状态更新和本层初始方程； child(u=source.y) 及 child(u=1) 也属于被禁止的运行输入绑定。",
+      "primaryRule": "M07",
+      "relatedRules": [],
+      "grade": "R",
+      "integration": "静态参数和纯 connect 模板允许；运行输入绑定即使常量也禁止。",
+      "source": "P06"
+    },
+    {
+      "id": "U-A04",
+      "sourceId": "A04",
+      "title": "层次真实且可下钻",
+      "sourceText": "总体入口闭合对象、环境、任务和反馈；SB表达系统，AB表达局部装配。多个视图引用同一套执行对象，不复制物理状态。传感器随被测系统或部件布置；不为凑层级增加空包装。",
+      "primaryRule": "M03",
+      "relatedRules": [
+        "M05",
+        "M17"
+      ],
+      "grade": "R",
+      "integration": "同一执行网络、真实层次与传感器归属保持；不凑空盒。",
+      "source": "P06"
+    },
+    {
+      "id": "U-B01",
+      "sourceId": "B01",
+      "title": "只公开必要边界",
+      "sourceText": "跨模型确需传递的量才通过对外接口提供。删除无消费者的遗留接口前，核查全部实例、继承、重声明、其他发布构型与结果引用；不能仅因顶层没连线就删除。",
+      "primaryRule": "M09",
+      "relatedRules": [
+        "M06",
+        "M31"
+      ],
+      "grade": "R",
+      "integration": "接口使用和删除证据必须真实；主动清理的时机仍受授权范围约束。",
+      "source": "P06"
+    },
+    {
+      "id": "U-B02",
+      "sourceId": "B02",
+      "title": "多参数按业务集成",
+      "sourceText": "将同一交互职责的多个量组织为具名复合接口，边界之间采用完整接口连接；模型只消费所需成员。不得把所有信息塞进一个无职责区分的万能总线，也不要求每个接收模型使用全部字段。",
+      "primaryRule": "M09",
+      "relatedRules": [
+        "M11"
+      ],
+      "grade": "S",
+      "integration": "优先按业务集成；一旦采用，成员合同与来源闭合为必须。",
+      "source": "P06"
+    },
+    {
+      "id": "U-B03",
+      "sourceId": "B03",
+      "title": "在局部白箱分接",
+      "sourceText": "需要接入MSL标量端口时，在所属SB/AB中用 connect(bus.field, component.port) 完成真实分接。优先消除“总线→多余边界标量→再次汇总”的转接；必要的父子边界转发保留。禁止白箱等值绑定和BU内 connect() 。",
+      "primaryRule": "M09",
+      "relatedRules": [
+        "M07",
+        "M08"
+      ],
+      "grade": "R",
+      "integration": "局部白箱真实分接，禁止白箱等式与 BU connect。",
+      "source": "P06"
+    },
+    {
+      "id": "U-B04",
+      "sourceId": "B04",
+      "title": "逐成员核对合同",
+      "sourceText": "接口及成员须明确类型、维数、单位、含义、方向和生产／消费责任；被使用信号必须有真实来源。复合接口按连接层级核对因果性，必要时显式声明方向；禁止将混合总线一律改为 output ，或随意删除方向来消除警告。",
+      "primaryRule": "M11",
+      "relatedRules": [
+        "M10"
+      ],
+      "grade": "R",
+      "integration": "方向与来源按逐层逐成员事实核查，不批量改 output 或删除方向。",
+      "source": "P06"
+    },
+    {
+      "id": "U-B05",
+      "sourceId": "B05",
+      "title": "物理端口与观察量分开",
+      "sourceText": "保留物理端口原有的势变量、 flow 、 stream 及参考关系，不用普通Real总线替代。仅供结果查看的量优先留在原有状态／计算单元或结果总线，不为中文标签、测点别名再增加运行端口或状态。",
+      "primaryRule": "M10",
+      "relatedRules": [
+        "M25"
+      ],
+      "grade": "R",
+      "integration": "守恒与观察用途分开，不为注释新增变量或端口。",
+      "source": "P06"
+    },
+    {
+      "id": "U-B06",
+      "sourceId": "B06",
+      "title": "杜绝幽灵接口",
+      "sourceText": "不保留无意义的中心端口、重复端口、画布外端口和零尺寸端口。仅本层使用的连接器可在作用域与兼容性验证后内部化； protected 不是隐藏本层接线的借口。保留的本层真实端口与连接必须可辨、可见。",
+      "primaryRule": "M04",
+      "relatedRules": [
+        "M09"
+      ],
+      "grade": "R",
+      "integration": "本层真实端口和接线可见；protected 不成为隐线手段。",
+      "source": "P06"
+    },
+    {
+      "id": "U-C01",
+      "sourceId": "C01",
+      "title": "所有真实连接可见",
+      "sourceText": "每条源级 connect() 都须在 声明它的白箱Diagram 中具有正确可见的 Line ；复合连接不需再伪造逐字段外部接口。禁止以 visible=false 、零线宽或移出画布掩盖真实连接。",
+      "primaryRule": "M04",
+      "relatedRules": [
+        "M07"
+      ],
+      "grade": "R",
+      "integration": "每条源级 connect 在声明白箱的有效 Diagram 可见；原库内部实现不强制重写。",
+      "source": "P06"
+    },
+    {
+      "id": "U-C02",
+      "sourceId": "C02",
+      "title": "连线事实优先",
+      "sourceText": "图上连通必须有真实 connect() ，装饰线不得冒充连接。整理路径不能擅改连接端点；减少连接数须删除经验证的冗余结构，不以固定连接数量作为合格标准。",
+      "primaryRule": "M04",
+      "relatedRules": [
+        "M31"
+      ],
+      "grade": "R",
+      "integration": "真实 connect 优先，不能用装饰线或固定数量代替连接事实。",
+      "source": "P06"
+    },
+    {
+      "id": "U-C03",
+      "sourceId": "C03",
+      "title": "端点与路径联动",
+      "sourceText": "移动、旋转、镜像或缩放组件后，同步核对Icon、Diagram及受影响父层的连接坐标。线头须落在真实端口上；优先短直线或正交折线，避开无关图标、文字和端口。线条交叉不能被误认为连接节点。",
+      "primaryRule": "M04",
+      "relatedRules": [
+        "M33"
+      ],
+      "grade": "R",
+      "integration": "端点一致性必须；短正交路由是建议。",
+      "source": "P06"
+    },
+    {
+      "id": "U-C04",
+      "sourceId": "C04",
+      "title": "颜色由接口类型决定",
+      "sourceText": "MSL原生及派生接口沿继承链使用对应库的默认连线色；自定义复合接口的整体线匹配接口主色，其中MSL类型成员线仍用MSL色。不得整图统一涂领域色，也不得仅删除 color 便声称已恢复默认色。",
+      "primaryRule": "M33",
+      "relatedRules": [
+        "M10"
+      ],
+      "grade": "S",
+      "integration": "类型继承色写入建议作者配置；项目选用后作为该项指定验收，物理类型不可改。",
+      "source": "P06"
+    },
+    {
+      "id": "U-D01",
+      "sourceId": "D01",
+      "title": "图标完整且原生",
+      "sourceText": "项目自有 model/block 补齐能识别功能的原生矢量Icon，具有清晰外框；使用 Rectangle/Line/Polygon/Ellipse/Text 等原生图元。MSL复用单元保留原图，不另建外部ICON库；项目品牌标识与类图标分别维护。",
+      "primaryRule": "M33",
+      "relatedRules": [
+        "M01"
+      ],
+      "grade": "S",
+      "integration": "原生 Icon、清晰外框及自包含绘制作为作者建议，不使已有合格图标自动失效。",
+      "source": "P06"
+    },
+    {
+      "id": "U-D02",
+      "sourceId": "D02",
+      "title": "统一风格，不同图案",
+      "sourceText": "采用已选定的黑色工程主轮廓＋小面积领域微色。图案反映已建模的功能和结构层级；同族保留关键区别，复杂系统适当丰富，不能机械套同图或画出不存在的机构。已认可图标不因无关修复重绘。",
+      "primaryRule": "M33",
+      "relatedRules": [],
+      "grade": "S",
+      "integration": "黑线微色和功能专有图案保持；无关任务不全面重画。",
+      "source": "P06"
+    },
+    {
+      "id": "U-D03",
+      "sourceId": "D03",
+      "title": "输入左，输出右",
+      "sourceText": "公开因果输入在左、输出在右；Icon与Diagram的端口方位保持一致或接近。非因果物理口按真实路径分组，混合总线按业务职责固定位置，避免无理由四面散布。端口贴近模型边界，留出可操作间距。",
+      "primaryRule": "M33",
+      "relatedRules": [
+        "M10"
+      ],
+      "grade": "S",
+      "integration": "左入右出适用于因果信号；物理口及混合总线按真实职责。",
+      "source": "P06"
+    },
+    {
+      "id": "U-D04",
+      "sourceId": "D04",
+      "title": "突出核心，按关系排布",
+      "sourceText": "沿主物质、能量或信息路径安排组件，适当放大核心模型；反馈路径清楚可循，显示位于结果侧。保留必要走线空间，不机械等距铺网格，不靠无限放大画布或缩小组件容纳端口墙。",
+      "primaryRule": "M33",
+      "relatedRules": [],
+      "grade": "S",
+      "integration": "沿真实关系布局，不固定节点坐标或系统数量。",
+      "source": "P06"
+    },
+    {
+      "id": "U-D05",
+      "sourceId": "D05",
+      "title": "文字少而可读",
+      "sourceText": "图面使用简短英文功能名和必要实例名，说明保留中文；标题、实例名和端口标签不重复、不重叠。删除低价值顶部横幅、参数面板和密集装饰标签；同时检查独立Icon与父层缩略图。Diagram中对外端口应适当突出。",
+      "primaryRule": "M33",
+      "relatedRules": [
+        "M18",
+        "M32"
+      ],
+      "grade": "S",
+      "integration": "短英文图面、中文说明、适当突出接口；只删低价值面板，不强删所有参数显示。",
+      "source": "P06"
+    },
+    {
+      "id": "U-E01",
+      "sourceId": "E01",
+      "title": "自然命名与一次显示",
+      "sourceText": "类和实例按系统、部件或职责命名，不强制添加TB/SB/AB/BU/LU前缀。模型树采用“英文类名（中文用途）”；类说明只写一次中文用途，不重复英文类名。显示修改不改稳定标识符与结果路径。",
+      "primaryRule": "M02",
+      "relatedRules": [
+        "M31"
+      ],
+      "grade": "S",
+      "integration": "自然命名与一次性中文类说明；稳定代码身份受必须保护。",
+      "source": "P06"
+    },
+    {
+      "id": "U-E02",
+      "sourceId": "E02",
+      "title": "中文写在真实声明上",
+      "sourceText": "自有类、参数、结果变量及接口字段使用准确中文声明说明，保留真实单位和含义；参数对话框按用途分组。MSL继承内容不靠修改原库翻译。须核查新生成结果的实际描述，不能只凭源码含中文就判定完成。",
+      "primaryRule": "M32",
+      "relatedRules": [
+        "M25",
+        "M26"
+      ],
+      "grade": "S",
+      "integration": "中文注释是作者建议；声称结果描述生效时必须有新结果证据。",
+      "source": "P06"
+    },
+    {
+      "id": "U-E03",
+      "sourceId": "E03",
+      "title": "逐类提供最小有效说明",
+      "sourceText": "统一 Documentation 风格，功能介绍分点说明。SB/AB写组成与边界，BU写行为及必要初态，LU写原基类与差异；connector/record/function写真实成员或调用合同。无相应内容不硬凑章节。",
+      "primaryRule": "M32",
+      "relatedRules": [],
+      "grade": "S",
+      "integration": "逐类最小有效说明，不强凑无用章节。",
+      "source": "P06"
+    },
+    {
+      "id": "U-E04",
+      "sourceId": "E04",
+      "title": "说明随源码同步",
+      "sourceText": "接口删除、改名或换类型后，同步清理成员表、链接和生成模板；不存在的接口残留为零。逐类重复的路径、发布版本、通用查看教程和审计套话移出类页；保留真实来源、许可和适用限制。",
+      "primaryRule": "M32",
+      "relatedRules": [
+        "M20",
+        "M28"
+      ],
+      "grade": "R",
+      "integration": "已有文稿与当前源码一致、无不存在成员；文稿完整覆盖仍属建议。",
+      "source": "P06"
+    },
+    {
+      "id": "U-F01",
+      "sourceId": "F01",
+      "title": "全量检查语言结构",
+      "sourceText": "检查 within 、文件／类名、 end 、分号、括号、数组维数、引用和 package.order 。清理空段头与错误段界；不混淆 equation 、 initial equation 和 algorithm ，不擅改语句顺序。",
+      "primaryRule": "M31",
+      "relatedRules": [],
+      "grade": "R",
+      "integration": "语言和交付完整性必须；词法检查不替代编译器。",
+      "source": "P06"
+    },
+    {
+      "id": "U-F02",
+      "sourceId": "F02",
+      "title": "使用正确注解属性",
+      "sourceText": "按图元分别检查属性，如 Text.textColor 、 Line.color/thickness 、形状的 lineColor/lineThickness 。删除最后一个图元后清理逗号；对目标工具不能接受的空 graphics={} ，移除空属性并保留所需坐标系。",
+      "primaryRule": "M31",
+      "relatedRules": [
+        "M33"
+      ],
+      "grade": "R",
+      "integration": "图元属性与逗号正确；空 graphics 的规避仅在目标工具确有问题时采用。",
+      "source": "P06"
+    },
+    {
+      "id": "U-F03",
+      "sourceId": "F03",
+      "title": "只删除不必要空行",
+      "sourceText": "全工程统一缩进、续行和段落排版；删除连续、残留及无意义空行，保留必要的单个分节空行，不追求“空行总数为零”。纯排版不得改字符串、注释内容或计算Token；再次格式化不应产生新变化。",
+      "primaryRule": "M34",
+      "relatedRules": [
+        "M31"
+      ],
+      "grade": "S",
+      "integration": "空行与缩进风格为建议；纯排版不得修改字符串、注释与计算词法序列为必须。",
+      "source": "P06"
+    },
+    {
+      "id": "U-F04",
+      "sourceId": "F04",
+      "title": "检查有效实现，不只查词",
+      "sourceText": "角色、端口与连线审计覆盖嵌套类、短类、继承、数组、条件构型及 redeclare 。未知语法或无法解析的MSL端口列为待查；不能用宽泛正则、括号配平或跳过异常替代完整检查。",
+      "primaryRule": "M05",
+      "relatedRules": [
+        "M07",
+        "M08",
+        "M28"
+      ],
+      "grade": "R",
+      "integration": "嵌套、短类、继承、数组、条件和重声明纳入检查；未知不冒作通过。",
+      "source": "P06"
+    },
+    {
+      "id": "U-G01",
+      "sourceId": "G01",
+      "title": "唯一活动源码根",
+      "sourceText": "ZIP可带版本号，解压根目录与根包类名一致；根部保留 package.mo 及必要 package.order 。包按职责组织，不重复嵌套同名项目，不为模板强建空目录；不是要求取消合法的Modelica包层级。",
+      "primaryRule": "M34",
+      "relatedRules": [
+        "M31"
+      ],
+      "grade": "S",
+      "integration": "一个活动根为必须；目录同根名是新发布建议，成熟路径只在授权后迁移。",
+      "source": "P06"
+    },
+    {
+      "id": "U-G02",
+      "sourceId": "G02",
+      "title": "离线配置，纯模型运行",
+      "sourceText": "用户从Excel等既定配置入口维护参数，准备阶段将值与曲线固化到 .mo 记录／数组。仿真不在线调用Excel或Python、不临时读取外部参数表；配置源与生效模型保持一致。",
+      "primaryRule": "M20",
+      "relatedRules": [
+        "M19"
+      ],
+      "grade": "R",
+      "integration": "离线固化参数曲线，标准运行不临时读取参数表；非参数资源不盲删。",
+      "source": "P06"
+    },
+    {
+      "id": "U-G03",
+      "sourceId": "G03",
+      "title": "生成器不得回灌旧版",
+      "sourceText": "离线配置、文档与图形维护脚本集中到 Scripts 。同一输入重复生成的稳定工程内容一致；生成后不得恢复已删接口、旧文档、幽灵端口或旧配色。维护模板与生成结果，不能只手改生成文件。",
+      "primaryRule": "M20",
+      "relatedRules": [
+        "M34"
+      ],
+      "grade": "R",
+      "integration": "相同输入不回灌旧工程内容为必须；Scripts 集中是目录建议。",
+      "source": "P06"
+    },
+    {
+      "id": "U-G04",
+      "sourceId": "G04",
+      "title": "按依赖清理交付文件",
+      "sourceText": "只保留运行、配置、必要资源和使用说明；临时试验、缓存、编译产物及重复结果移出生产包。删除管理文件前先迁移其必要依赖；不按目录名称盲删Resources，也不把审计记录塞回模型画布。",
+      "primaryRule": "M34",
+      "relatedRules": [
+        "M06",
+        "M31"
+      ],
+      "grade": "S",
+      "integration": "按依赖精简生产包，不把目录名当无用证据。",
+      "source": "P06"
+    },
+    {
+      "id": "U-H01",
+      "sourceId": "H01",
+      "title": "冻结可运行基线",
+      "sourceText": "从目标工具实际可运行的版本建立只读对照，并记录本轮授权范围。修复按最小差异实施；出现回退先查版本差异，不因“恰好差几个方程”就猜测删除同数量变量或连接。",
+      "primaryRule": "M31",
+      "relatedRules": [
+        "M28"
+      ],
+      "grade": "R",
+      "integration": "冻结可信对照与授权范围，不根据方程差额猜补丁。",
+      "source": "P06"
+    },
+    {
+      "id": "U-H02",
+      "sourceId": "H02",
+      "title": "图形与计算分开保护",
+      "sourceText": "图形／文档维护只豁免明确的Icon、Diagram、Placement、Line及说明范围。类型、方向、 start/fixed/nominal 、 HideResult 、 experiment 与求解注解单独保护，禁止去掉全部annotation后声称计算未变。",
+      "primaryRule": "M31",
+      "relatedRules": [],
+      "grade": "R",
+      "integration": "按具体图形/文档节点豁免，其他注解和声明属性保护。",
+      "source": "P06"
+    },
+    {
+      "id": "U-H03",
+      "sourceId": "H03",
+      "title": "接口重构按语义变更验收",
+      "sourceText": "删除端口、改变访问范围或因果方向、重写connect都须检查展开网络、初始化、状态及结果路径。公式未改或方程数相等不能单独证明等效；不得新增虚假未知量、删除真实守恒约束或恢复端口墙来凑验收。",
+      "primaryRule": "M30",
+      "relatedRules": [
+        "M27",
+        "M31"
+      ],
+      "grade": "R",
+      "integration": "执行接口重构时按语义变更验收，不靠公式或方程数宣称等效。",
+      "source": "P06"
+    },
+    {
+      "id": "U-H04",
+      "sourceId": "H04",
+      "title": "一次最终回归，失败继续修复",
+      "sourceText": "最终执行一次完整任务，与可信基线按既定路径、数值容差及离散事件比较；验证必需结果可读。不得填零补缺失、删除失败路径或放宽容差。“最终一次”不限制必要诊断，也不表示失败即可停止。",
+      "primaryRule": "M27",
+      "relatedRules": [
+        "M26"
+      ],
+      "grade": "F",
+      "integration": "纳入 Codex C05/C08；项目启用最终完整回归时必须执行，必要诊断不受“一次”限制。",
+      "source": "P06"
+    },
+    {
+      "id": "U-H05",
+      "sourceId": "H05",
+      "title": "分开报告验收状态",
+      "sourceText": "源码检查、编译展开、动态结果和原生GUI分别记录通过／失败／待验。静态预览不冒充软件截图，OpenModelica通过不代替MWorks通过。涉及连接或注解的最终效果须在目标软件确认；已认可画布不得无关回退。",
+      "primaryRule": "M26",
+      "relatedRules": [
+        "M28"
+      ],
+      "grade": "R",
+      "integration": "源码、展开、动态结果、各工具 GUI 独立报告，未执行不得填通过。",
+      "source": "P06"
+    }
+  ]
+}

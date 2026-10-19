@@ -1,8 +1,9 @@
 {
-  "name": "mosaic",
-  "version": "0.8.0",
-  "standard": "MOSAIC v0.8",
-  "date": "2026-10-10",
+  "name": "MOSAIC-skill",
+  "version": "0.9.0",
+  "standard": "MOSAIC v0.9",
+  "date": "2026-10-19",
+  "skillName": "mosaic",
   "mainRules": {
     "count": 36,
     "grades": {
@@ -10,67 +11,343 @@
       "S": 9,
       "F": 1
     },
-    "sha256": "7ccf61ea171877c3c6fb4b600a76d5e6f5e3a20495c35896afd63a7bde02aa5b"
+    "canonical": "assets/rules.json"
   },
-  "tests": {
-    "unitTests": 51,
-    "status": "PASS",
-    "modelicaCompilation": "NOT_RUN",
-    "modelicaSimulation": "NOT_RUN",
-    "modelicaGUI": "NOT_CHECKED",
-    "hostInstallation": "NOT_CHECKED"
+  "latestSourceMapping": {
+    "count": 36,
+    "file": "assets/latest_requirements.json",
+    "separateMandatoryRuleSet": false
   },
-  "hashAlgorithm": "SHA-256",
-  "excluded": [
-    "manifest.json"
+  "entry": "SKILL.md",
+  "onlyNamedCase": "12UCubeSat",
+  "sourceArtifacts": [
+    {
+      "id": "P04",
+      "description": "User-provided v0.8 standard",
+      "sha256": "76af896356a34b25b860475fabe46500a0883a3357e3db2af592829f4083d374"
+    },
+    {
+      "id": "P05",
+      "description": "User-provided existing v0.8 skill archive",
+      "sha256": "d0fb1da6463102812a5eee0438e1522c0b4a7644e1ac05711b3549ac9b789953"
+    },
+    {
+      "id": "P06",
+      "description": "User-provided latest 36-item modeling and interaction rules",
+      "sha256": "f168d18b1c2bcd707cb4b3c0003ce87ffe4acd0ea41b508829e56da416e6d1e9"
+    }
   ],
-  "files": {
-    "LICENSE": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986",
-    "NOTICE.md": "aa3b3b14c0c5603d7c62b23becdb379ba7ae3fa497ae1523a6ed55b7663712c2",
-    "README.md": "01eab19cbcde06142c089568862c7836c88fa7c7d5c355ea1f403f51d8b04d80",
-    "SKILL.md": "faa245fe9a2808a1edbb73103468556004c9e23d5582c51f6cdbed9088995e1d",
-    "VALIDATION.md": "1e943a10ddf8655c2ebf1d44d5c1bc0902da0db473f5359646785261c5a94b16",
-    "agents/openai.yaml": "7c98227c8c47c249d09424ae4ed120c349b36fa1e4870ca3ea62c9bdafe71abd",
-    "assets/AGENTS.md": "c4b35273a447054b9df524d6e3dec4f3ba896221a2ab30ac84f9ad9b5057f6c6",
-    "assets/auxiliary_allowlist.json": "b8c8991fe038a086617e871d2c111d1887bc7dbadb5c1a2ca426a108ecaa4d36",
-    "assets/documentation_catalog.json": "d0b516501e2bbe828d084db487f86727e4d684152f1c4cee0f1ea47e76482760",
-    "assets/engineering_report.md": "1bd4df35e52d3efbad75be2ce4d0edf4c7fa81a05cc3cb872615203dd37ccf07",
-    "assets/mosaic-logo.png": "333913a51f8e6eaeb54d85ef25c0b18d4fe926018585dcaa1a840e84ec1cd7c3",
-    "assets/project_contract.json": "fba8e81e16a9954bfc81b743b2580773415c25192ab22471235c3acd294f72fa",
-    "assets/results_contract.json": "1bdea72f6521e10e38c7064a56626e20f50ef44a294439922d8466019fb32ff0",
-    "assets/role_map.json": "573bb56146e9d37bded8642dc9f2b5c69ec9b251bddfd8d8cdde4204c456ac81",
-    "assets/rules.json": "7ccf61ea171877c3c6fb4b600a76d5e6f5e3a20495c35896afd63a7bde02aa5b",
-    "examples/12ucubesat.md": "f0e36d609869410b2d1a75736b2d56e24455dd76a47b948b0c7b7da6b91f4ec6",
-    "references/architecture.md": "55c9f088d650a39a02ab8c73184646a2e6055c8e34fe387f00b043e5fbbd1128",
-    "references/brand.md": "0e3926c8bd4b44c9b3e0346566eb6851047b5b7b2cea97fd44fce8612c19da80",
-    "references/codex.md": "f008a8094752f3a1b710f11138d7fbe071f483052e57cc0a19a751c364704505",
-    "references/configuration.md": "a5581971a7cf69fe3c64df354706a94d3b2776d06b71cba24fc47a3e34399c6f",
-    "references/documentation.md": "c296e315be6a2ea00d1b820058a7b1b1b0ef0c815d09a509483af3e101fa6f0c",
-    "references/evolution.md": "014f2f954c2ed7e87594f20bbf1a22e3e870f50be39194415a5fc9c5e96905b0",
-    "references/interfaces_contracts.md": "f7b3d0c9e05e6e9e01f08fa1568239a540db5564b0cc0ce2392a2e05036102bc",
-    "references/model_roles.md": "415b386b0f503da25fb629603ea637a060649f8e2cf2124c0aabf43003b2e58c",
-    "references/msl_interfaces.md": "eca42e88754a437dbe07a13f94fefea78b7469c5fd792ad0f4b9c4faf84bcc78",
-    "references/sources.md": "19297faa08d9ab262496df33d08597c8eb787e6e8c71784a9933718ff2781b45",
-    "references/standard.md": "8c78f5fe7d108aa9ae3748425f37aa6c2dd5e30f3b9202650304a406294498f8",
-    "references/traceability.md": "3ec4acae42471ed2bda257dcf064a6d546b57814c56feed5ba1d0d6047e3318d",
-    "references/upgrade.md": "fac8bf4b1a8af18bfe9f521862b54756960d3e68238e50c23ac008245aaafebf",
-    "references/verification.md": "dfe4ab8ae078bf6d4e37436317b35458764a6e37cf5d10bca48d8ac8d47db495",
-    "references/visuals.md": "f66ad2b96a32b15c4ae81d0bd17ddcc21f099af819a40961956f337ed6b0af6f",
-    "scripts/audit_project.py": "08342a10d77660486a6c959207c7bd769bac1c6f33ffbf15d8db91a94e2d1444",
-    "scripts/audit_roles.py": "eff16418fb2c638dabde554212fcad1c8d2d03bafdf1bc973e801bd87986ee29",
-    "scripts/auxiliary_metadata.py": "81afd73ee406a3b1172adda5fbf17012879aeaf83342d2a2abc8d1605cedb770",
-    "scripts/check_contract.py": "5d3ccef59e005d83907ecd6df79bedacbae4184f48cdae2b2b0b9efa03552d96",
-    "scripts/clean_documentation.py": "d7d72113ff07ad47fe7bb74788b9ec356a2e011d6f1d67b70698d79488e1eaa0",
-    "scripts/connection_colors.py": "ac56d325fa0b51a9d57a683bdff7775d6c7913925e12c3ec7ebe41f08bad6519",
-    "scripts/documentation_support.py": "5b1339e8ac42aa357d33c9feba18c4198c8f66268fc502032fe52a0b97e5514b",
-    "scripts/enrich_documentation.py": "cec5ffa4fb0eeeab9fd7bee53411fa8928729bc310274fcd48f9cf7f0f74395b",
-    "scripts/inspect_result_metadata.py": "ec3bb69722622d859b2b79a5ecd57da5af1540d64b90943d5607003095bd5d51",
-    "scripts/modelica_support.py": "2beadcea7b7b16231613d639109c984aa69b09a9fe235da036912284355a3d7b",
-    "scripts/run_guarded.py": "ae0de822c4296283b8db6afba3de4b225e02fce19c078c10b87383fd4884e8b9",
-    "scripts/verify_aux_only.py": "a6632ebbff986c7951766312a81a1289bd81539b6bb74052caeb03791d3cb4cb",
-    "tests/behavior_cases.md": "a3ad2ef9b5e156b593793cbdf685772e3f739597c4cc06822249f39c129aca65",
-    "tests/test_auxiliary_v08.py": "ca3569b4e06632235761bb5cbde719ed6d00edcc9eadd49fb902335a458baef1",
-    "tests/test_roles_v08.py": "3f3669b485889d354388c57406c38c4c9e5e0f3674bc00235a00f8be5f843132",
-    "tests/test_tools.py": "efceec7e13088ffd1d25c52b98d1494f39b94a06d1741d19444b8566fe5698c1"
-  }
+  "relatedReport": {
+    "filename": "MOSAIC_v0.9_Modelica_Modeling_Standard.html",
+    "sha256": "ba53ab132a509155e96fef42362341eb08f0fe07cd629ad247cee2cb0fdce75b",
+    "bytes": 2131145,
+    "includedInArchive": false
+  },
+  "validation": {
+    "record": "VALIDATION.md",
+    "machineRecord": "validation/release-checks.json",
+    "toolTests": 121,
+    "modelicaCompile": "NOT_RUN",
+    "simulation": "NOT_RUN",
+    "nativeGUI": "NOT_CHECKED"
+  },
+  "files": [
+    {
+      "path": "LICENSE",
+      "bytes": 35149,
+      "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986"
+    },
+    {
+      "path": "NOTICE.md",
+      "bytes": 587,
+      "sha256": "2c5e382f8e22385cf2f913e83aed74fd2477ab3ce56cbaa2e49884894e12bee3"
+    },
+    {
+      "path": "README.md",
+      "bytes": 5692,
+      "sha256": "c004475437eb13f9f0bd9c89405d4b7cd1c80bf1b7195d88c0c6b64cd78ec577"
+    },
+    {
+      "path": "SKILL.md",
+      "bytes": 12688,
+      "sha256": "dc6a9ed7329a37d3ebb27eb147f170fc64c21c47640ff72dbad9beae0962cf54"
+    },
+    {
+      "path": "VALIDATION.md",
+      "bytes": 3440,
+      "sha256": "e1188b61a41b8e82c547b7a1ad6a271a6c48735bcf5751b7012e2b3fdd3b71e1"
+    },
+    {
+      "path": "agents/openai.yaml",
+      "bytes": 456,
+      "sha256": "9b99e488c604c088ac547abce8c178bfdd8cb747d8456cd3aaf5a5529614fa49"
+    },
+    {
+      "path": "assets/AGENTS.md",
+      "bytes": 1652,
+      "sha256": "a361c650a2150086aa7337d01c4f56f2eac6308d473a4347a3238cb884f99030"
+    },
+    {
+      "path": "assets/authoring_profile.json",
+      "bytes": 854,
+      "sha256": "5736926bb3b277e05cf5c924b48e734daf52b7c8610f002e673607d80187dba2"
+    },
+    {
+      "path": "assets/auxiliary_allowlist.json",
+      "bytes": 74,
+      "sha256": "b8c8991fe038a086617e871d2c111d1887bc7dbadb5c1a2ca426a108ecaa4d36"
+    },
+    {
+      "path": "assets/connector_palette.json",
+      "bytes": 309,
+      "sha256": "284a12cb256acfca6dbdd5a8f1f8222780b1e639c388d8f693fb3e74205615dd"
+    },
+    {
+      "path": "assets/documentation_catalog.json",
+      "bytes": 724,
+      "sha256": "3ffb32d7081d603d880a073bdabdc13b510fe93426e4794c7267341b0ff2e218"
+    },
+    {
+      "path": "assets/engineering_report.md",
+      "bytes": 1875,
+      "sha256": "c765f7a77a4e4280b9cb9f6135f23e6360f788457673e7b3d65c76a320dfff9f"
+    },
+    {
+      "path": "assets/interface_mapping.json",
+      "bytes": 851,
+      "sha256": "3dbfa4fce2a3c31cb8399ad83bbd64268c7304d408566191a73584e2ce6690b3"
+    },
+    {
+      "path": "assets/latest_requirements.json",
+      "bytes": 21888,
+      "sha256": "03dbb7e4cd5a7f8848ab4dd458a071d1b4a0afdb8ba7a8dcbd69621bd60de4b9"
+    },
+    {
+      "path": "assets/mosaic-logo.png",
+      "bytes": 1382552,
+      "sha256": "333913a51f8e6eaeb54d85ef25c0b18d4fe926018585dcaa1a840e84ec1cd7c3"
+    },
+    {
+      "path": "assets/project_contract.json",
+      "bytes": 1593,
+      "sha256": "fcca99ead7e0e7ff6b6db7b40510857c1defb56220cfe25c55fc1353f7400ee7"
+    },
+    {
+      "path": "assets/results_contract.json",
+      "bytes": 362,
+      "sha256": "e0f0505f26be1907484f6c977c895e7d6971adc911a2de38ca5670ec49540cb1"
+    },
+    {
+      "path": "assets/role_map.json",
+      "bytes": 416,
+      "sha256": "7349cf3231d6a2eb5f3740e5698317bbe73f0a68093d1c3286008a8783244add"
+    },
+    {
+      "path": "assets/rules.json",
+      "bytes": 53367,
+      "sha256": "74016cfb7926759cd6a674d723547a4069146c3936e2a79103e4df001a7444f2"
+    },
+    {
+      "path": "examples/12ucubesat.md",
+      "bytes": 4704,
+      "sha256": "b6667e95e9d7a0300d5f3f8aee1b70d582480afef37d2660827c1bf9132dd130"
+    },
+    {
+      "path": "references/architecture.md",
+      "bytes": 2905,
+      "sha256": "b1d107990bd171d2bea053b2fa2f9f6ccbb9b68076b30741574ca948a3e313fe"
+    },
+    {
+      "path": "references/brand.md",
+      "bytes": 2722,
+      "sha256": "0e3926c8bd4b44c9b3e0346566eb6851047b5b7b2cea97fd44fce8612c19da80"
+    },
+    {
+      "path": "references/codex.md",
+      "bytes": 6010,
+      "sha256": "3b1419f273a53bb46641c5a0f6ab9f939af68333b34ad37600864853b4440962"
+    },
+    {
+      "path": "references/configuration.md",
+      "bytes": 4619,
+      "sha256": "748db803d5623e6fa32db4ae4fcee64134ef19aaf2754f284565251ed6bb05ca"
+    },
+    {
+      "path": "references/documentation.md",
+      "bytes": 6756,
+      "sha256": "dfe53a9d45e33967caaaa6d1f4c1198ce6a4dad6aa953b0e93afd14b8b8d0c1f"
+    },
+    {
+      "path": "references/evolution.md",
+      "bytes": 2689,
+      "sha256": "014f2f954c2ed7e87594f20bbf1a22e3e870f50be39194415a5fc9c5e96905b0"
+    },
+    {
+      "path": "references/interfaces_contracts.md",
+      "bytes": 6526,
+      "sha256": "40f9e4650e2ae71a2e353404d1ea8dca248af985dfa88b63ed4f7000da1575d3"
+    },
+    {
+      "path": "references/model_roles.md",
+      "bytes": 21199,
+      "sha256": "1ad91eee7b206feca95a0e65d777f366f6b68c4b1bf0f7607636cef5ca42fd3b"
+    },
+    {
+      "path": "references/msl_interfaces.md",
+      "bytes": 5109,
+      "sha256": "eca42e88754a437dbe07a13f94fefea78b7469c5fd792ad0f4b9c4faf84bcc78"
+    },
+    {
+      "path": "references/release_mapping.md",
+      "bytes": 6113,
+      "sha256": "28339e44b8c7ebdd561408b5d83bf22bbac59e300b60def2f38042f13e3dfccb"
+    },
+    {
+      "path": "references/sources.md",
+      "bytes": 2021,
+      "sha256": "0b750fd2195ae6eb8bacef7c4dec5cf350314f0600915d26b1a1da8b7ec558b0"
+    },
+    {
+      "path": "references/standard.md",
+      "bytes": 47063,
+      "sha256": "7841fa964d8ffc619634883ff79037fd1fa625fe536dd63692be787acf52485b"
+    },
+    {
+      "path": "references/traceability.md",
+      "bytes": 9487,
+      "sha256": "ce412fd26b42311503b3640c883e174043ac567518aceba214529d502e774059"
+    },
+    {
+      "path": "references/upgrade.md",
+      "bytes": 1564,
+      "sha256": "c07c3bc7d3519c5a295ff4861f981afb188c5a0f1e443fc528497234d7c3d72c"
+    },
+    {
+      "path": "references/verification.md",
+      "bytes": 5908,
+      "sha256": "9e97b9f49031ade8084f7628fdfb8e592d4aad1ab69a35c11927831cf8c9a067"
+    },
+    {
+      "path": "references/visuals.md",
+      "bytes": 13014,
+      "sha256": "99ce8c1bbe0af18cc2d80b358be5f91703e3adca96f655c73336628897aebfa0"
+    },
+    {
+      "path": "scripts/audit_connections.py",
+      "bytes": 8445,
+      "sha256": "3b36e92b978278a55bf84f10a5ba2320806b01e30cac4403887bd57899603e01"
+    },
+    {
+      "path": "scripts/audit_project.py",
+      "bytes": 2310,
+      "sha256": "86211417ef65ac14041a468fe064c4c6a383fc6836265e616b32f896a51b6979"
+    },
+    {
+      "path": "scripts/audit_roles.py",
+      "bytes": 6555,
+      "sha256": "d6595af83ef7d096a7ce30f33ba8467f25be4e72a9dc2666e639939c66ca89b8"
+    },
+    {
+      "path": "scripts/auxiliary_metadata.py",
+      "bytes": 4146,
+      "sha256": "81afd73ee406a3b1172adda5fbf17012879aeaf83342d2a2abc8d1605cedb770"
+    },
+    {
+      "path": "scripts/check_contract.py",
+      "bytes": 1607,
+      "sha256": "5d3ccef59e005d83907ecd6df79bedacbae4184f48cdae2b2b0b9efa03552d96"
+    },
+    {
+      "path": "scripts/clean_documentation.py",
+      "bytes": 1940,
+      "sha256": "d7d72113ff07ad47fe7bb74788b9ec356a2e011d6f1d67b70698d79488e1eaa0"
+    },
+    {
+      "path": "scripts/connection_colors.py",
+      "bytes": 19302,
+      "sha256": "f1fe95e4c28f3bb8abbaeb6590fcfb8457b0a248427ab724d78313155eeac5a8"
+    },
+    {
+      "path": "scripts/documentation_support.py",
+      "bytes": 12202,
+      "sha256": "5b1339e8ac42aa357d33c9feba18c4198c8f66268fc502032fe52a0b97e5514b"
+    },
+    {
+      "path": "scripts/enrich_documentation.py",
+      "bytes": 1556,
+      "sha256": "cec5ffa4fb0eeeab9fd7bee53411fa8928729bc310274fcd48f9cf7f0f74395b"
+    },
+    {
+      "path": "scripts/format_modelica.py",
+      "bytes": 3776,
+      "sha256": "f97615e1cbdbbaf402b62e6be1f8483ea96dec1c3eb53c4a9eedb03d7ff81d58"
+    },
+    {
+      "path": "scripts/inspect_result_metadata.py",
+      "bytes": 3329,
+      "sha256": "ec3bb69722622d859b2b79a5ecd57da5af1540d64b90943d5607003095bd5d51"
+    },
+    {
+      "path": "scripts/modelica_support.py",
+      "bytes": 13627,
+      "sha256": "2beadcea7b7b16231613d639109c984aa69b09a9fe235da036912284355a3d7b"
+    },
+    {
+      "path": "scripts/run_guarded.py",
+      "bytes": 2538,
+      "sha256": "ae0de822c4296283b8db6afba3de4b225e02fce19c078c10b87383fd4884e8b9"
+    },
+    {
+      "path": "scripts/verify_aux_only.py",
+      "bytes": 4171,
+      "sha256": "a6632ebbff986c7951766312a81a1289bd81539b6bb74052caeb03791d3cb4cb"
+    },
+    {
+      "path": "scripts/verify_change_scope.py",
+      "bytes": 10338,
+      "sha256": "9bdf5c61f066a1e113edd02b2140e2aa0a50903b031817df4882d2935139a29d"
+    },
+    {
+      "path": "tests/behavior_cases.md",
+      "bytes": 2944,
+      "sha256": "c3f8528e829e728b9e782464b05c91d1eca7bbe90eedb838b6e20f4133ac2947"
+    },
+    {
+      "path": "tests/test_auxiliary_v08.py",
+      "bytes": 6671,
+      "sha256": "ca3569b4e06632235761bb5cbde719ed6d00edcc9eadd49fb902335a458baef1"
+    },
+    {
+      "path": "tests/test_release_v09.py",
+      "bytes": 5034,
+      "sha256": "1751625147509e1f47b4e5532bb517f6870f6acf2f7239b84f67b1b69efc0490"
+    },
+    {
+      "path": "tests/test_roles_v08.py",
+      "bytes": 2460,
+      "sha256": "3f3669b485889d354388c57406c38c4c9e5e0f3674bc00235a00f8be5f843132"
+    },
+    {
+      "path": "tests/test_tools.py",
+      "bytes": 6025,
+      "sha256": "efceec7e13088ffd1d25c52b98d1494f39b94a06d1741d19444b8566fe5698c1"
+    },
+    {
+      "path": "tests/test_v09.py",
+      "bytes": 11839,
+      "sha256": "0e741c4c6d48b0246def02dfbd677e4d264694ddff735da086bceff2e4c31c71"
+    },
+    {
+      "path": "validation/release-checks.json",
+      "bytes": 1988,
+      "sha256": "c15a15dad355c1f0346b1523b9c1c803e34f6b5d4c661d96cace7512c2ea2199"
+    },
+    {
+      "path": "validation/test-results.txt",
+      "bytes": 10798,
+      "sha256": "96e31ca2dbbf9bb3627c2fcb29795d0f37d642618ba17a37b66a0a0301de55d8"
+    }
+  ],
+  "fileCountExcludingManifest": 59,
+  "digestScope": "All regular files except this manifest. SHA-256 content hashes, not signatures."
 }

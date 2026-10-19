@@ -1,27 +1,24 @@
 # 来源与适用边界
 
-工程政策以用户提供的 MOSAIC v0.4.2、v0.5.0、v0.6、既有 v0.7 及本轮 v0.8 修订要求为依据。旧文用于恢复具体的角色/语法清单，不重新启用角色前缀、MSL 传感器禁令或强制图标样式。当前规则是 `standard.md` 与 `model_roles.md`；历史去向见 `traceability.md`。
+本版以用户提供的 **MOSAIC v0.8 规范、当前 skill 压缩包、最新建模与交互规则汇总（36项）**为唯一工程要求基线。后者在本包中标为 P06；逐条去向见 release_mapping.md 及 assets/latest_requirements.json。源项目的专用入口、目录、文件删除清单、运行阈值和工具权限不作为通用要求。唯一具名案例沿用 12UCubeSat。
 
-具体项目案例只采用用户提供的 12UCubeSat/OneSatSim 源码。案例中的配置、层数、时域和任务数量都不是通用要求；实际使用说明与运行证据分别记载。
-
-## 主条文的来源标记
-
-| 标记 | 对应输入 |
+| 标记 | 含义 |
 |---|---|
-| P01 | MOSAIC v0.4.2：角色与白箱公共语法、接口、状态 |
-| P02 | MOSAIC v0.5.0：M01—M36条号、分级与历史索引 |
-| P03 | MOSAIC v0.6：Modelica图形与项目视觉参考 |
-| P04 | 已有MOSAIC v0.7、12UCubeSat认可架构与辅助维护方法 |
-| P05 | 当前v0.8修订要求：具体规范、文稿清理、名称去重、线色和品牌 |
+| P01 | 历史 MOSAIC v0.4.2，角色、白箱与接口详表的来源 |
+| P02 | 历史 MOSAIC v0.5.0，36主条号和分级来源 |
+| P03 | 历史 MOSAIC v0.6，图标与品牌参考 |
+| P04 | 本次上传的 MOSAIC v0.8 规范正文 |
+| P05 | 本次上传的既有 skill 实现（入口与 manifest 标记为0.8） |
+| P06 | 本次上传的最新36项建模与交互要求汇总，2026-10-19 |
 
-同一条目可能由多个输入合并。来源不构成继续叠加的旧要求，当前正文及分级优先。
+历史文本不重复叠加执行；当前正文、明确的融合索引与任务合同共同决定适用范围。工具新增行为是为了落实来源要求，并非新增物理建模标准。保留案例中原有证据的历史属性，不把旧测试改写为本次复跑。
 
-## 技术核对资料（2026-10-10）
+## 技术字段核对，不作为新增工程政策
 
-- Modelica Association，Language Specification 3.6，Annotations：`https://specification.modelica.org/maint/3.6/annotations.html`。Documentation、图元、Line.color 默认、显示与求解相关注解。
-- Modelica Association，Connectors and Connections：`https://specification.modelica.org/maint/3.6/connectors-and-connections.html`。语义以语言标准为准；白箱分工是 MOSAIC 工程约定。
-- Modelica Standard Library，固定 tag `v4.0.0`：`https://github.com/modelica/ModelicaStandardLibrary/tree/v4.0.0/Modelica`。核对接口族的原始类型和图形颜色，不要求把项目依赖升级到最新库。
-- OpenAI 官方 Build skills：`https://learn.chatgpt.com/docs/build-skills`。SKILL.md、可选资源目录、agents/openai.yaml、Codex本地发现路径。
-- 前作：`https://github.com/Ruizhe-Yang/modelica-system-level-simulation-skill`。作为既有功能范围和许可的历史来源；本版不依赖旧 skill，也不把旧要求无条件叠加。
+Modelica 3.6 图形/注解字段及 OpenAI 本地 skill 包装方式于 2026-10-19 核对官方文档。前者只核对 Line、Text、Documentation、HideResult、experiment 等语法/语义边界；后者只核对 SKILL.md 元数据和本地发现位置。用户文件仍决定 MOSAIC 工程要求。
 
-静态辅助工具使用有限语法解析和明确类型表，不是完整编译器。无法展开的类型、重声明和模板应保留待核，不能用“没发现”冒充全部符合。这里的 URL 是追溯资料，不是模型运行依赖。
+- T01 Modelica Association，Annotations： https://specification.modelica.org/maint/3.6/annotations.html
+- T02 MSL 4.0.0 原接口资料： https://github.com/modelica/ModelicaStandardLibrary/tree/v4.0.0/Modelica 。色表继承自上传 skill；本次没有下载或重新编译整个 MSL。
+- T03 OpenAI，Build skills： https://learn.chatgpt.com/docs/build-skills
+
+这些链接仅用于来源核对，模型与辅助脚本不依赖在线访问。有限静态扫描不替代语言编译器、完整因果分析或原生 GUI。

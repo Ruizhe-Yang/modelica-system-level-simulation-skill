@@ -1,0 +1,37 @@
+{
+  "schema": "MOSAIC-AUTHORING-PROFILE-0.9",
+  "name": "recommended-zh-authoring",
+  "enabled": false,
+  "scope": "项目明确选用后成为 PROJECT_REQUIRED，不改变通用 R/S/F 等级。",
+  "selections": [
+    "U-B02",
+    "U-C04",
+    "U-D01",
+    "U-D02",
+    "U-D03",
+    "U-D04",
+    "U-D05",
+    "U-E01",
+    "U-E02",
+    "U-E03",
+    "U-F03",
+    "U-G01",
+    "U-G03",
+    "U-G04"
+  ],
+  "language": {
+    "identifiers": "preserve-valid-English",
+    "classDescriptions": "Chinese-purpose-once",
+    "diagramLabels": "short-English",
+    "documentation": "Chinese"
+  },
+  "newScriptDirectory": "Scripts",
+  "reuseApprovedIcons": true,
+  "mslVersion": "USER_TO_SET",
+  "customConnectorPalette": "USER_TO_SET",
+  "forbiddenActions": [
+    "auto-rename-stable-paths",
+    "auto-delete-resources",
+    "physics-change-under-visual-task"
+  ]
+}

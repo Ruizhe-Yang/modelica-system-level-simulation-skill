@@ -1,0 +1,73 @@
+{
+  "version": "0.9.0",
+  "date": "2026-10-19",
+  "scope": "Standard and skill release only; no engineering-model change, Modelica engine execution, or native modeling GUI verification.",
+  "python": "3.13.5",
+  "runtime": "Linux",
+  "tests": {
+    "command": "python -m unittest discover -s tests -v",
+    "count": 121,
+    "status": "PASS",
+    "log": "test-results.txt"
+  },
+  "package": {
+    "version": "0.9.0",
+    "python": "3.13.5",
+    "sourceFilesParsed": 20,
+    "scripts": 15,
+    "testMethods": 121,
+    "testFiles": {
+      "test_release_v09.py": 12,
+      "test_auxiliary_v08.py": 20,
+      "test_roles_v08.py": 10,
+      "test_v09.py": 58,
+      "test_tools.py": 21
+    },
+    "mainRuleCount": 36,
+    "grades": {
+      "R": 26,
+      "S": 9,
+      "F": 1
+    },
+    "sourceMappingCount": 36,
+    "markdownLinksChecked": 21,
+    "brandLogoUnchanged": true,
+    "logoSha256": "333913a51f8e6eaeb54d85ef25c0b18d4fe926018585dcaa1a840e84ec1cd7c3",
+    "unresolvedIssues": []
+  },
+  "reportStructure": {
+    "file": "MOSAIC_v0.9_Modelica_Modeling_Standard.html",
+    "bytes": 2131145,
+    "ruleCount": 36,
+    "grades": {
+      "R": 26,
+      "S": 9,
+      "F": 1
+    },
+    "sourceMappingCount": 36,
+    "duplicateIds": {},
+    "brokenAnchors": [],
+    "imageCount": 1,
+    "externalAssetCount": 0
+  },
+  "reportBrowserPreview": {
+    "desktopOverflow": false,
+    "title": "MOSAIC v0.9｜Modelica 总体建模规范",
+    "logoLoaded": true,
+    "initialCount": "36 / 36",
+    "gradeFiltering": "PASS",
+    "connectKeywordCount": 10,
+    "hiddenTargetReveal": "PASS",
+    "mappingRows": 36,
+    "svgViewBoxes": true,
+    "printRestore": "PASS",
+    "mobileOverflow": false,
+    "mobileRoleOverflow": false,
+    "browserErrors": [],
+    "externalNetworkRequests": [],
+    "method": "Local HTML content rendered in headless Chromium; no external asset requests."
+  },
+  "modelicaCompilation": "NOT_RUN",
+  "modelicaSimulation": "NOT_RUN",
+  "nativeModelingGUI": "NOT_CHECKED"
+}

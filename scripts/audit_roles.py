@@ -7,12 +7,15 @@ items. Never infer full conformance from the absence of local findings.
 from pathlib import Path
 import argparse,json,re,sys
 from modelica_support import Source
-from connection_colors import Index,msl_kind,msl_member
+from connection_colors import Index,msl_kind,msl_member,all_connections
 WHITE={'TB','SB','AB'};ROLES=WHITE|{'BU','LU'}
 BUILTINS={'Real','Boolean','Integer','String'}
 
 def review(root:Path,role_map:dict)->dict:
+ if not root.is_dir():raise ValueError('Project directory does not exist')
+ if any(p.is_symlink() for p in root.rglob('*')):raise ValueError('Symlinks require review')
  ix=Index(root);rows=[]
+ if not ix.sources:raise ValueError('No Modelica source files found')
  roles=role_map.get('roles',role_map)
  if not isinstance(roles,dict) or not roles:raise ValueError('A nonempty class-to-role map is required')
  for name,role in roles.items():
@@ -23,6 +26,10 @@ def review(root:Path,role_map:dict)->dict:
   def walk(c):
    if c.full in visited:return
    visited.add(c.full);s=ix.sources[ix.class_files[c.full]]
+   if role=='BU':
+    for cn in all_connections(s):
+     if cn['class'].full==c.full:
+      findings.append({'owner':c.full,'check':'BU_CONNECT_FORBIDDEN','endpoints':cn['endpoints']})
    if role in WHITE:
     nested=[(cc.a,cc.b) for cc in c.children]
     for t in s.scan(c.a,c.b):
@@ -40,7 +47,8 @@ def review(root:Path,role_map:dict)->dict:
    for d in c.decls:
     if any(p in d.prefix for p in ('parameter','constant')):continue
     ty=ix.resolve(d.type,c.full);cc=ix.classes.get(ty)
-    connector=bool(msl_kind(ty or '') or cc and cc.kind=='connector')
+    connector=bool(any(msl_kind(a) for a in ix.ancestry(ty)) or cc and cc.kind=='connector')
+    if not ty:pending.append('DECLARATION_TYPE_UNRESOLVED: '+c.full+'.'+d.name)
     runtime=bool(cc and cc.kind in ('model','block') or ty and ty.startswith('Modelica.') and not connector and not ty.startswith(('Modelica.Units.','Modelica.Blocks.Types.','Modelica.Icons.')))
     if 'outer' in d.prefix:continue
     if runtime:instances.append({'owner':c.full,'instance':d.name,'type':ty,'childRole':roles.get(ty,'UNASSIGNED')})
@@ -78,7 +86,7 @@ def review(root:Path,role_map:dict)->dict:
    if c.statements:findings.append({'check':'LU_ADDED_BEHAVIOR','owner':name})
    if not any((ix.resolve(e,c.full) or '').startswith('Modelica.') for e in c.extends):pending.append('LU_ORIGIN_REQUIRES_REVIEW')
   rows.append({'class':name,'role':role,'status':'FINDINGS' if findings else 'REVIEW_REQUIRED' if pending else 'NO_LOCAL_FINDING','effectiveProjectClasses':sorted(visited),'instances':instances,'findings':findings,'pending':sorted(set(pending))})
- return {'scope':'Explicit-map lexical review; no full inheritance flattening, equation balance, simulation or full conformance claim','version':'0.8.0','status':'FINDINGS' if any(r['findings'] for r in rows) else 'REVIEW_REQUIRED' if any(r['pending'] for r in rows) else 'NO_LOCAL_FINDING','mappedClassCount':len(rows),'unmappedModelBlocks':sorted(n for n,c in ix.classes.items() if c.kind in ('model','block') and n not in roles),'classes':rows}
+ return {'scope':'Explicit-map lexical review; no full inheritance flattening, equation balance, simulation or full conformance claim','version':'0.9.0','status':'FINDINGS' if any(r['findings'] for r in rows) else 'REVIEW_REQUIRED' if any(r['pending'] for r in rows) else 'NO_LOCAL_FINDING','mappedClassCount':len(rows),'unmappedModelBlocks':sorted(n for n,c in ix.classes.items() if c.kind in ('model','block') and n not in roles),'classes':rows}
 
 def main():
  p=argparse.ArgumentParser(description=__doc__);p.add_argument('root',type=Path);p.add_argument('--roles',type=Path,required=True);p.add_argument('--output',type=Path,required=True);a=p.parse_args()

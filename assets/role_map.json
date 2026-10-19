@@ -1,5 +1,5 @@
 {
-  "schema": "MOSAIC-ROLE-MAP-0.8",
+  "schema": "MOSAIC-ROLE-MAP-0.9",
   "entryModel": "ExampleProject.Simulation.CompleteMission",
   "note": "示例路径须用项目真实类替换。工具只检查此映射；未映射类不会自动被判符合。",
   "roles": {

@@ -1,0 +1,13 @@
+{
+  "schema": "MOSAIC-CONNECTOR-PALETTE-0.9",
+  "mslVersion": "4.0.0",
+  "reviewed": false,
+  "reviewBasis": "填写当前 connector 源码及人工确认主色；示例不能直接视为已批准。",
+  "customColors": {
+    "ExampleProject.Interfaces.Telemetry": [
+      0,
+      100,
+      100
+    ]
+  }
+}

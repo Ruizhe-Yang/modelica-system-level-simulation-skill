@@ -1,5 +1,5 @@
 {
-  "schema": "MOSAIC-RESULTS-0.8",
+  "schema": "MOSAIC-RESULTS-0.9",
   "entryModel": "ExampleProject.Simulation.CompleteMission",
   "signals": [
     {

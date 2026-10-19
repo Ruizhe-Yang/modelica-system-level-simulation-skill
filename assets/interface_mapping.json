@@ -1,0 +1,31 @@
+{
+  "schema": "MOSAIC-INTERFACE-MAP-0.9",
+  "entryModel": "USER_TO_SET",
+  "status": "TEMPLATE_NOT_EVIDENCE",
+  "interfaces": [
+    {
+      "port": "USER_TO_SET",
+      "responsibility": "USER_TO_SET",
+      "type": "USER_TO_SET",
+      "origin": "MSL / derived / custom",
+      "members": [
+        {
+          "name": "USER_TO_SET",
+          "type": "USER_TO_SET",
+          "unit": "USER_TO_SET",
+          "dimensions": "USER_TO_SET",
+          "direction": "USER_TO_SET",
+          "producer": "USER_TO_SET",
+          "consumers": [],
+          "identity": "USER_TO_SET",
+          "timeSemantics": "USER_TO_SET",
+          "unusedDisposition": "USER_TO_SET"
+        }
+      ],
+      "wholeBoundaryConnections": [],
+      "localWhiteboxFanout": [],
+      "redundancyCandidates": [],
+      "allConfigurationReferencesChecked": false
+    }
+  ]
+}

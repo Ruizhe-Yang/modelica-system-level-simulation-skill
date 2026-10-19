@@ -19,3 +19,16 @@
 | 解析不出端点或库派生关系 | 输出REVIEW_REQUIRED；先查实际库，不采用对端猜色 |
 | 显示Aircraft (Aircraft（中文）) | 类说明只保留中文用途，不改英文类标识符 |
 | 配置重生成后文稿旧套话恢复 | 修正文稿目录与后处理；参数和数学生成逻辑不变 |
+
+
+## v0.9 增量案例
+
+- BU直接或继承出现connect时给出违规；无法解析的类型保持待核。
+- 白箱总线成员分接可用；运行输入modifier、普通等式和“大BU包装”不作为接口集成方案。
+- 漏Line、显式隐线、零宽/零长和零尺寸端口可定位；模板、坐标变换及GUI仍独立待验。
+- DOCUMENTATION_ONLY不改颜色；CONNECTION_COLOR_ONLY不改点序或线宽；VISUAL_ONLY保护experiment/Evaluate/HideResult。
+- FORMAT_ONLY保留字符串、注释、计算/图形Token和版本文字，重复执行幂等，源目录不变。
+- 自定义主色未经人工reviewed确认不能自动写回；有限MSL4.0.0色表不扩展为其他版本证明。
+- 36条M规范、36条U来源映射、文档和机器规则同源；默认作者配置关闭、项目默认AUDIT，不生成运行PASS。
+
+这些案例测试辅助工具行为，不启动Modelica引擎或建模器GUI。

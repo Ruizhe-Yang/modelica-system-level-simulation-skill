@@ -1,9 +1,9 @@
 {
-  "schema": "MOSAIC-PROJECT-CONTRACT-0.8",
-  "mode": "DOCUMENTATION_ONLY",
+  "schema": "MOSAIC-PROJECT-CONTRACT-0.9",
+  "mode": "AUDIT",
   "projectName": "ExampleProject",
   "entryModel": "ExampleProject.Simulation.CompleteMission",
-  "standard": "0.8",
+  "standard": "0.9",
   "dependencyProfile": {
     "modelica": "4.0.0",
     "externalIntegrations": []
@@ -13,11 +13,7 @@
     "basis": "user supplied working source",
     "executionEvidence": "NOT_CHECKED"
   },
-  "allowedChanges": [
-    "Documentation",
-    "declaration string-comment",
-    "explicit root release version"
-  ],
+  "allowedChanges": [],
   "protected": [
     "equations",
     "algorithms",
@@ -31,9 +27,7 @@
     "workbook values"
   ],
   "mandatoryRules": "applicable R in rules.json",
-  "recommendationsSelected": [
-    "M32"
-  ],
+  "recommendationsSelected": [],
   "referencesSelected": [
     "C01",
     "C02",
@@ -45,10 +39,20 @@
   "runBudget": null,
   "currentExecution": "NOT_RUN",
   "deliverables": [
-    "updated source",
-    "MODEL_ENGINEERING_REPORT.md"
+    "read-only audit report"
   ],
-  "termination": "all requested auxiliary descriptions completed and protected diff reviewed; unresolved compiler/UI checks disclosed",
+  "termination": "完成已授权审核并记录未知项；需要写入、完整运行或GUI确认时分别取得当前任务依据。",
   "roleMap": "role_map.json",
-  "notes": "模式与允许项由当前任务填写；Documentation-only不启用连接线颜色豁免。"
+  "notes": "按当前任务填表；AUDIT默认只读。具体秒数、删除文件、主入口和权限不从任何案例继承。",
+  "authoringProfile": null,
+  "finalRegression": {
+    "required": false,
+    "comparisonContract": null,
+    "note": "只有当前任务启用才执行；不得因仅文档任务自动改变数值。"
+  },
+  "platformPolicy": {
+    "OpenModelica": "USER_TO_SET",
+    "MWorks": "USER_TO_SET",
+    "guiAutomationAuthorized": false
+  }
 }
